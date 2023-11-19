@@ -2,6 +2,7 @@
   "files.associations": {
     "metatiletest.h": "c",
     "nesdoug.h": "c",
-    "bible_game.h": "c"
+    "bible_game.h": "c",
+    "metatiles1.h": "c"
   }
 }

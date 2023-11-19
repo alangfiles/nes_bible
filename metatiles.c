@@ -731,7 +731,7 @@ char bg_collision_sub(void)
 		collision = c_map2[coordinates];
 	}
 
-	if (collision < 10)
+	if (collision < 16) // first 16 tiles are bottom collision
 	{
 		collision = 1;
 	}

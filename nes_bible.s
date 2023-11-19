@@ -9491,9 +9491,9 @@ L1F69:	ldy     _coordinates
 	lda     _c_map2,y
 L20CD:	sta     _collision
 ;
-; if (collision < 10)
+; if (collision < 16) // first 16 tiles are bottom collision
 ;
-	cmp     #$0A
+	cmp     #$10
 	bcs     L20D0
 ;
 ; collision = 1;

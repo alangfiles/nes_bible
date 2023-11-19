@@ -289,4 +289,4 @@ sounds_data:
 
 .segment "CHARS"
 
-	.incbin "metatiles.chr"
+	.incbin "nes_bible.chr"

@@ -5,7 +5,7 @@
 CC65 = cc65
 CA65 = ca65
 LD65 = ld65
-NAME = metatiles
+NAME = nes_bible
 CFG = nrom_32k_vert.cfg
 
 
@@ -21,13 +21,13 @@ $(NAME).nes: $(NAME).o crt0.o $(CFG)
 	rm *.o
 	@echo $(NAME).nes created
 
-crt0.o: crt0.s metatiles.chr
+crt0.o: crt0.s nes_bible.chr
 	$(CA65) crt0.s
 
 $(NAME).o: $(NAME).s
 	$(CA65) $(NAME).s -g
 
-$(NAME).s: $(NAME).c Sprites.h metatiles.h
+$(NAME).s: $(NAME).c Sprites.h nes_bible.h
 	$(CC65) -Oirs $(NAME).c --add-source
 
 clean:

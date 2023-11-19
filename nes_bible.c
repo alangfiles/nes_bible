@@ -9,7 +9,7 @@
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
 #include "Sprites.h" // holds our metasprite data
-#include "metatiles.h"
+#include "nes_bible.h"
 
 void main(void)
 {

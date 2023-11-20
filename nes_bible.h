@@ -87,10 +87,8 @@ struct Hero BoxGuy1 = {0x4000,0x8400}; // starting position
 // the width and height should be 1 less than the dimensions (14x14)
 // note, I'm using the top left as the 0,0 on x,y
 
-#define HERO_WIDTH 13
-#define HERO_HEIGHT 13
-#define HERO_WIDTH 13
-#define HERO_HEIGHT 13
+#define HERO_WIDTH 19
+#define HERO_HEIGHT 14
 
 
 

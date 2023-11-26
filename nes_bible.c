@@ -11,6 +11,7 @@
 #include "Sprites.h" // holds our metasprite data
 #include "nes_bible.h"
 #include "old_collision.c"
+#include "player_sprites.c"
 
 void main(void)
 {
@@ -131,156 +132,7 @@ void draw_sprites(void)
 	// clear all sprites from sprite buffer
 	oam_clear();
 
-	temp_x = BoxGuy1.x >> 8;
-	temp_y = BoxGuy1.y >> 8;
-	if (temp_x == 0)
-		temp_x = 1;
-	if (temp_y == 0)
-		temp_y = 1;
-	//
-
-	++sprite_frame_counter;
-
-	if (player_jumping && BoxGuy1.vel_y > 0) // aka, falling
-	{																				 // jumping
-		if (direction == LEFT)
-		{
-			if (sprite_frame_counter < 8)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesfallwiggle1left);
-			}
-			else if (sprite_frame_counter < 15)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
-			}
-			else
-			{
-				sprite_frame_counter = 0;
-				oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
-			}
-		}
-		else
-		{
-			if (sprite_frame_counter < 8)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesfallwiggle1right);
-			}
-			else if (sprite_frame_counter < 15)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
-			}
-			else
-			{
-				sprite_frame_counter = 0;
-				oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
-			}
-		}
-	}
-	else if (direction == LEFT)
-	{
-
-		if (BoxGuy1.vel_x)
-		{
-			if (sprite_frame_counter < 4)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun1left);
-			}
-			else if (sprite_frame_counter < 8)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun2left);
-			}
-			else if (sprite_frame_counter < 12)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun3left);
-			}
-			else if (sprite_frame_counter < 16)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun4left);
-			}
-			else if (sprite_frame_counter < 20)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun5left);
-			}
-			else if (sprite_frame_counter < 24)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun4left);
-			}
-			else if (sprite_frame_counter < 28)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun3left);
-			}
-			else if (sprite_frame_counter < 32)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun2left);
-			}
-			else if (sprite_frame_counter < 35)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun1left);
-			}
-			else
-			{
-				sprite_frame_counter = 0;
-				oam_meta_spr(temp_x, temp_y, mosesrun1left);
-			}
-		}
-		else
-		{
-			sprite_frame_counter = 0;
-			oam_meta_spr(temp_x, temp_y, mosesstandleft);
-		}
-	}
-	else
-	{
-		if (BoxGuy1.vel_x)
-		{
-			if (sprite_frame_counter < 4)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun1right);
-			}
-			else if (sprite_frame_counter < 8)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun2right);
-			}
-			else if (sprite_frame_counter < 12)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun3right);
-			}
-			else if (sprite_frame_counter < 16)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun4right);
-			}
-			else if (sprite_frame_counter < 20)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun5right);
-			}
-			else if (sprite_frame_counter < 24)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun4right);
-			}
-			else if (sprite_frame_counter < 28)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun3right);
-			}
-			else if (sprite_frame_counter < 32)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun2right);
-			}
-			else if (sprite_frame_counter < 35)
-			{
-				oam_meta_spr(temp_x, temp_y, mosesrun1right);
-			}
-			else
-			{
-				sprite_frame_counter = 0;
-				oam_meta_spr(temp_x, temp_y, mosesrun1right);
-			}
-		}
-		else
-		{
-			sprite_frame_counter = 0;
-			oam_meta_spr(temp_x, temp_y, mosesstandright);
-		}
-	}
+	draw_player_sprites();
 
 	if (debug)
 	{
@@ -473,22 +325,17 @@ void movement(void)
 			player_jumping = 1;
 		}
 	}
-	if (pad1_new & PAD_B)
+	if (pad1_new & PAD_B) // shooting
 	{
-		if (debug)
-		{
-			debug = 0;
-			ppu_off();
-			ppu_mask(0);
-			ppu_on_all();
+		if (shooting)
+		{ // one projectile at a time
+			return;
 		}
 		else
 		{
-			debug = 1;
-			ppu_wait_nmi();
-			ppu_off();
-			ppu_mask(1);
-			ppu_on_all();
+			shooting = 1;
+			projectile_x = BoxGuy1.x + 10;
+			projectile_y = BoxGuy1.y;
 		}
 	}
 

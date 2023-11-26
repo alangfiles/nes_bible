@@ -60,6 +60,9 @@ unsigned int old_y;
 unsigned char temp_x;
 unsigned char temp_y;
 unsigned char temp_room;
+unsigned char shooting;
+unsigned char projectile_x;
+unsigned char projectile_y;
 
 
 #pragma bss-name(push, "BSS")

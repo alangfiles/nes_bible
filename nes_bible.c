@@ -73,7 +73,22 @@ void projectile_movement(void)
 			}
 			else
 			{
-				projectiles_x[temp1] += 2;
+
+				temp2 = 2; // amount to move the projectile
+				// move it faster if scrolling the player
+				if (BoxGuy1.x > (MAX_RIGHT - 4) || BoxGuy1.x < (MAX_LEFT + 4))
+				{
+					temp2 += 1;
+				}
+
+				if (projectiles_list[temp1] == RIGHT)
+				{
+					projectiles_x[temp1] += temp2;
+				}
+				else if (projectiles_list[temp1] == LEFT)
+				{
+					projectiles_x[temp1] -= temp2;
+				}
 			}
 		}
 	}
@@ -377,7 +392,16 @@ void movement(void)
 		{
 			++projectile_index;
 		}
-		projectiles_list[projectile_index] = 1;
+		// if player is facing right:
+		if (direction == RIGHT)
+		{
+			projectiles_list[projectile_index] = RIGHT;
+		}
+		else
+		{
+			projectiles_list[projectile_index] = LEFT;
+		}
+
 		projectiles_x[projectile_index] = high_byte(BoxGuy1.x) + 10;
 		projectiles_y[projectile_index] = high_byte(BoxGuy1.y);
 	}

@@ -3,19 +3,47 @@
 #define COL_LADDER 0x20
 
 const unsigned char is_solid[] = {
-    0,
-    COL_DOWN,
+    COL_ALL,
+    COL_ALL,
     COL_ALL + COL_DOWN,
-    COL_DOWN,
-    COL_DOWN,
-    COL_DOWN,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL, // 9
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    COL_ALL,
+    0,
+    0,
+    0,
+    0, // 19
     0,
     0,
     0,
     0,
     0,
     0,
-    0};
+    0,
+    0,
+    0,
+    0, // 29
+    0,
+    0,
+    COL_LADDER,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+
+};
 
 void bg_collision_fast(void)
 {
@@ -64,12 +92,12 @@ char bg_coll_L(void)
 
   eject_L = temp_x | 0xf0;
   temp_y = Generic.y + 2;
-  if (bg_collision_sub() & COL_ALL)
+  if (bg_collision_sub())
     return 1;
 
   temp_y = Generic.y + Generic.height;
   temp_y -= 2;
-  if (bg_collision_sub() & COL_ALL)
+  if (bg_collision_sub())
     return 1;
 
   return 0;
@@ -193,8 +221,5 @@ char bg_collision_sub(void)
     collision = c_map2[coordinates];
   }
 
-  if (collision < 16)
-  {
-    return is_solid[collision];
-  }
+  return is_solid[collision];
 }

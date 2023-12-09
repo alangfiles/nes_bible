@@ -10,7 +10,7 @@
 #include "LIB/nesdoug.h"
 #include "Sprites.h" // holds our metasprite data
 #include "nes_bible.h"
-#include "old_collision.c"
+#include "collision.c"
 #include "player_sprites.c"
 
 void main(void)
@@ -78,24 +78,33 @@ void projectile_movement(void)
 				if (projectiles_list[temp1] == RIGHT)
 				{
 
-					if (BoxGuy1.x > (MAX_RIGHT - 4))
+					// TODO, i think this doesn't get called.
+					if (BoxGuy1.x > (MAX_RIGHT - 4) && pad1_new & PAD_RIGHT)
 					{
-						temp2 -= 1;
+						// max scroll change
+						temp3 = (BoxGuy1.x - MAX_RIGHT - 4) >> 8;
+						if (temp3 > 3)
+							temp3 = 3; // max scroll change
+						temp2 += temp3;
 					}
-					if (BoxGuy1.x < (MAX_LEFT + 4))
+					if (BoxGuy1.x < (MAX_LEFT + 4) && pad1_new & PAD_LEFT)
 					{
-						temp2 += 1;
+						temp3 = (MAX_LEFT + 4 - BoxGuy1.x) >> 8;
+						if (temp3 > 3)
+							temp3 = 3;
+
+						temp2 += temp3;
 					}
 
 					projectiles_x[temp1] += temp2;
 				}
 				else if (projectiles_list[temp1] == LEFT)
 				{
-					if (BoxGuy1.x > (MAX_RIGHT - 4))
+					if (BoxGuy1.x > (MAX_RIGHT - 4) && pad1_new & PAD_RIGHT)
 					{
-						temp2 += 1;
+						temp2 += 3;
 					}
-					if (BoxGuy1.x < (MAX_LEFT + 4))
+					if (BoxGuy1.x < (MAX_LEFT + 4) && pad1_new & PAD_LEFT)
 					{
 						temp2 -= 1;
 					}
@@ -376,6 +385,14 @@ void movement(void)
 	if (projectile_cooldown > 0)
 	{
 		--projectile_cooldown;
+	}
+
+	if (pad1_new & PAD_UP)
+	{
+		if (bg_coll_U() == COL_LADDER)
+		{
+			ppu_off();
+		}
 	}
 
 	if (pad1_new & PAD_A)

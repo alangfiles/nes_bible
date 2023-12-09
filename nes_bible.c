@@ -185,14 +185,11 @@ void draw_sprites(void)
 
 	draw_player_sprites();
 
-	if (projectile_count > 0)
+	for (temp1 = 0; temp1 <= MAX_PROJECTILES; ++temp1)
 	{
-		for (temp1 = 0; temp1 <= MAX_PROJECTILES; ++temp1)
+		if (projectiles_list[temp1] != OFF)
 		{
-			if (projectiles_x[temp1] > 0)
-			{
-				oam_meta_spr(projectiles_x[temp1], projectiles_y[temp1], orb1);
-			}
+			oam_meta_spr(projectiles_x[temp1], projectiles_y[temp1], orb1);
 		}
 	}
 
@@ -394,7 +391,7 @@ void movement(void)
 	}
 	if (pad1_new & PAD_B && projectile_count <= MAX_PROJECTILES && projectile_cooldown == 0) // shooting
 	{
-		projectile_cooldown = 30;
+		projectile_cooldown = PROJECTILE_COOLDOWN_FRAMES;
 		player_shooting = 1;
 		++projectile_count;
 

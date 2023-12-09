@@ -3,6 +3,7 @@
 #define OFF 0xff
 
 
+
 #define GRAVITY 0x3c
 #define MAX_SPEED 0x240
 #define JUMP_VEL -0x600
@@ -10,6 +11,7 @@
 #define MAX_LEFT 0x4000
 
 #define MAX_PROJECTILES 3
+#define PROJECTILE_COOLDOWN_FRAMES 10
 
 #pragma bss-name(push, "ZEROPAGE")
 

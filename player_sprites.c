@@ -8,29 +8,17 @@ void draw_player_sprites()
     temp_y = 1;
   //
 
-  if (shooting)
+  if (player_shooting)
   {
-    ++shooting;
-    if (shooting < 10)
+    ++player_shooting;
+    if (player_shooting < 20)
     {
-      oam_meta_spr(temp_x, temp_y, mosesrunshoot1right);
-    }
-    else if (shooting < 15)
-    {
-      oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
-    }
-    else if (shooting < 20)
-    {
-      oam_meta_spr(temp_x, temp_y, mosesrunshoot3right);
-    }
-    else if (shooting < 25)
-    {
-      oam_meta_spr(temp_x, temp_y, mosesrunshoot4right);
+      oam_meta_spr(temp_x, temp_y, mosesstandshootright);
     }
     else
     {
-      shooting = 0;
-      oam_meta_spr(temp_x, temp_y, mosesrunshoot4right);
+      player_shooting = 0;
+      oam_meta_spr(temp_x, temp_y, mosesstandshootright);
     }
   }
   else

@@ -48,12 +48,34 @@ void main(void)
 		pad1_new = get_pad_new(0);
 
 		movement();
+
+		projectile_movement();
+
 		set_scroll_x(scroll_x);
 		set_scroll_y(scroll_y);
 
 		handle_scrolling();
 
 		draw_sprites();
+	}
+}
+
+void projectile_movement(void)
+{
+	for (temp1 = 0; temp1 < 3; ++temp1)
+	{
+		if (projectiles_list[temp1] != OFF)
+		{
+			if (projectiles_x[temp1] > 250)
+			{
+				--projectile_count;
+				projectiles_list[temp1] = OFF;
+			}
+			else
+			{
+				projectiles_x[temp1] += 2;
+			}
+		}
 	}
 }
 
@@ -133,6 +155,17 @@ void draw_sprites(void)
 	oam_clear();
 
 	draw_player_sprites();
+
+	if (projectile_count > 0)
+	{
+		for (temp1 = 0; temp1 <= MAX_PROJECTILES; ++temp1)
+		{
+			if (projectiles_x[temp1] > 0)
+			{
+				oam_meta_spr(projectiles_x[temp1], projectiles_y[temp1], orb1);
+			}
+		}
+	}
 
 	if (debug)
 	{
@@ -315,6 +348,11 @@ void movement(void)
 	// check collision down a little lower than hero
 	Generic.y = high_byte(BoxGuy1.y); // the rest should be the same
 
+	if (projectile_cooldown > 0)
+	{
+		--projectile_cooldown;
+	}
+
 	if (pad1_new & PAD_A)
 	{
 		if (bg_coll_D2())
@@ -325,18 +363,23 @@ void movement(void)
 			player_jumping = 1;
 		}
 	}
-	if (pad1_new & PAD_B) // shooting
+	if (pad1_new & PAD_B && projectile_count <= MAX_PROJECTILES && projectile_cooldown == 0) // shooting
 	{
-		if (shooting)
-		{ // one projectile at a time
-			return;
+		projectile_cooldown = 30;
+		player_shooting = 1;
+		++projectile_count;
+
+		if (projectile_index >= MAX_PROJECTILES)
+		{
+			projectile_index = 0;
 		}
 		else
 		{
-			shooting = 1;
-			projectile_x = BoxGuy1.x + 10;
-			projectile_y = BoxGuy1.y;
+			++projectile_index;
 		}
+		projectiles_list[projectile_index] = 1;
+		projectiles_x[projectile_index] = high_byte(BoxGuy1.x) + 10;
+		projectiles_y[projectile_index] = high_byte(BoxGuy1.y);
 	}
 
 #pragma endregion

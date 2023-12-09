@@ -179,7 +179,7 @@ const unsigned char mosesstandshootleft[] = {
 		12, -7, 0x0b, 2,
 		0, 0, 0x08, 0,
 		0x80};
-const unsigned char mosesstandshootleft__1[] = {
+const unsigned char mosesstandshootright[] = {
 		16, -8, 0x00, 0 | OAM_FLIP_H,
 		8, -8, 0x01, 0 | OAM_FLIP_H,
 		16, 0, 0x09, 0 | OAM_FLIP_H,

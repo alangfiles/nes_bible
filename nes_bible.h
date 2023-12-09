@@ -70,9 +70,9 @@ unsigned char player_shooting;
 unsigned char projectile_cooldown;
 unsigned char projectile_count;
 unsigned char projectile_index;
-unsigned char projectiles_list[] = {OFF, OFF, OFF};
-unsigned char projectiles_x[] = {0, 0, 0};
-unsigned char projectiles_y[] = {0, 0, 0};
+unsigned char projectiles_list[] = {OFF, OFF, OFF, OFF};
+unsigned char projectiles_x[] = {0, 0, 0, 0};
+unsigned char projectiles_y[] = {0, 0, 0, 0};
 
 #pragma bss-name(push, "BSS")
 

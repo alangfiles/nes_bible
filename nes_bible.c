@@ -68,7 +68,6 @@ void projectile_movement(void)
 		{
 			if (projectiles_x[temp1] > 250)
 			{
-				--projectile_count;
 				projectiles_list[temp1] = OFF;
 			}
 			else
@@ -185,7 +184,7 @@ void draw_sprites(void)
 
 	draw_player_sprites();
 
-	for (temp1 = 0; temp1 <= MAX_PROJECTILES; ++temp1)
+	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 	{
 		if (projectiles_list[temp1] != OFF)
 		{
@@ -389,32 +388,37 @@ void movement(void)
 			player_jumping = 1;
 		}
 	}
-	if (pad1_new & PAD_B && projectile_count <= MAX_PROJECTILES && projectile_cooldown == 0) // shooting
+	if (pad1_new & PAD_B && projectile_cooldown == 0) // shooting
 	{
-		projectile_cooldown = PROJECTILE_COOLDOWN_FRAMES;
-		player_shooting = 1;
-		++projectile_count;
 
-		if (projectile_index >= MAX_PROJECTILES)
+		// check if there's an empty shot spot
+		for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 		{
-			projectile_index = 0;
+			if (projectiles_list[temp1] == OFF)
+			{
+				temp2 = 1;
+				break;
+			}
 		}
-		else
+		if (temp2)
 		{
-			++projectile_index;
-		}
-		// if player is facing right:
-		if (direction == RIGHT)
-		{
-			projectiles_list[projectile_index] = RIGHT;
-		}
-		else
-		{
-			projectiles_list[projectile_index] = LEFT;
-		}
+			projectile_cooldown = PROJECTILE_COOLDOWN_FRAMES;
+			player_shooting = 1;
+			projectile_index = temp1;
 
-		projectiles_x[projectile_index] = high_byte(BoxGuy1.x) + 10;
-		projectiles_y[projectile_index] = high_byte(BoxGuy1.y);
+			// if player is facing right:
+			if (direction == RIGHT)
+			{
+				projectiles_list[projectile_index] = RIGHT;
+			}
+			else
+			{
+				projectiles_list[projectile_index] = LEFT;
+			}
+
+			projectiles_x[projectile_index] = high_byte(BoxGuy1.x) + 10;
+			projectiles_y[projectile_index] = high_byte(BoxGuy1.y);
+		}
 	}
 
 #pragma endregion

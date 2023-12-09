@@ -74,19 +74,33 @@ void projectile_movement(void)
 			else
 			{
 
-				temp2 = 2; // amount to move the projectile
-				// move it faster if scrolling the player
-				if (BoxGuy1.x > (MAX_RIGHT - 4) || BoxGuy1.x < (MAX_LEFT + 4))
-				{
-					temp2 += 1;
-				}
+				temp2 = 2; // projectile speed
 
 				if (projectiles_list[temp1] == RIGHT)
 				{
+
+					if (BoxGuy1.x > (MAX_RIGHT - 4))
+					{
+						temp2 -= 1;
+					}
+					if (BoxGuy1.x < (MAX_LEFT + 4))
+					{
+						temp2 += 1;
+					}
+
 					projectiles_x[temp1] += temp2;
 				}
 				else if (projectiles_list[temp1] == LEFT)
 				{
+					if (BoxGuy1.x > (MAX_RIGHT - 4))
+					{
+						temp2 += 1;
+					}
+					if (BoxGuy1.x < (MAX_LEFT + 4))
+					{
+						temp2 -= 1;
+					}
+
 					projectiles_x[temp1] -= temp2;
 				}
 			}

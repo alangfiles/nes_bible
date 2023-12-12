@@ -17,7 +17,7 @@ void draw_player_sprites()
     {
       if (direction == LEFT)
       {
-        if (player_jumping)
+        if (player_in_air)
         {
           oam_meta_spr(temp_x, temp_y, mosesjumpleftshoot);
         }
@@ -47,7 +47,7 @@ void draw_player_sprites()
       }
       else
       {
-        if (player_jumping)
+        if (player_in_air)
         {
           oam_meta_spr(temp_x, temp_y, mosesjumprightshoot);
         }
@@ -84,42 +84,57 @@ void draw_player_sprites()
   else
   {
 
-    if (player_jumping && BoxGuy1.vel_y > 0) // aka, falling
-    {                                        // jumping
-      if (direction == LEFT)
+    if (player_in_air) // aka, falling
+    {                  // jumping
+      if (player_jumping)
       {
-        if (sprite_frame_counter < 8)
+        if (direction == LEFT)
         {
-          oam_meta_spr(temp_x, temp_y, mosesfallwiggle1left);
-        }
-        else if (sprite_frame_counter < 15)
-        {
-          oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
+          oam_meta_spr(temp_x, temp_y, mosesjumpleft);
         }
         else
         {
-          sprite_frame_counter = 0;
-          oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
+          oam_meta_spr(temp_x, temp_y, mosesjumpright);
         }
       }
       else
-      {
-        if (sprite_frame_counter < 8)
+      { // player_falling
+
+        if (direction == LEFT)
         {
-          oam_meta_spr(temp_x, temp_y, mosesfallwiggle1right);
-        }
-        else if (sprite_frame_counter < 15)
-        {
-          oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
+          if (sprite_frame_counter < 8)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesfallwiggle1left);
+          }
+          else if (sprite_frame_counter < 15)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
+          }
+          else
+          {
+            sprite_frame_counter = 0;
+            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
+          }
         }
         else
         {
-          sprite_frame_counter = 0;
-          oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
+          if (sprite_frame_counter < 8)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesfallwiggle1right);
+          }
+          else if (sprite_frame_counter < 15)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
+          }
+          else
+          {
+            sprite_frame_counter = 0;
+            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
+          }
         }
       }
     }
-    else if (direction == LEFT)
+    else if (direction == LEFT) // not jumping
     {
 
       if (BoxGuy1.vel_x)

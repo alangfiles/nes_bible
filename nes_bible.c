@@ -348,6 +348,16 @@ void movement(void)
 	// BoxGuy1.vel_y is signed
 	if (BoxGuy1.vel_y < 0x300)
 	{
+		if (BoxGuy1.vel_y < 0)
+		{
+			player_jumping = 1;
+			player_falling = 0;
+		}
+		else
+		{
+			player_jumping = 0;
+			player_falling = 1;
+		}
 		BoxGuy1.vel_y += GRAVITY;
 	}
 	else
@@ -355,6 +365,7 @@ void movement(void)
 		BoxGuy1.vel_y = 0x300; // consistent
 	}
 	BoxGuy1.y += BoxGuy1.vel_y;
+	// player_falling = 1;
 
 	Generic.x = high_byte(BoxGuy1.x);
 	Generic.y = high_byte(BoxGuy1.y);
@@ -369,7 +380,8 @@ void movement(void)
 			{
 				BoxGuy1.vel_y = 0;
 			}
-			player_jumping = 0;
+			player_in_air = 0;
+			// player_falling = 0;
 		}
 	}
 	else if (BoxGuy1.vel_y < 0)
@@ -404,6 +416,7 @@ void movement(void)
 			BoxGuy1.vel_y = JUMP_VEL; // JUMP
 			// sfx_play(SFX_JUMP, 0);
 			short_jump_count = 1;
+			player_in_air = 1;
 			player_jumping = 1;
 		}
 	}

@@ -6,7 +6,6 @@
 #define COL_ALL 0x40
 #define COL_LADDER 0x01
 
-
 #define GRAVITY 0x3c
 #define MAX_SPEED 0x240
 #define JUMP_VEL -0x600
@@ -16,7 +15,7 @@
 #define MAX_PROJECTILES 3
 #define PROJECTILE_COOLDOWN_FRAMES 10
 
-#pragma bss-name(push, "ZEROPAGE")
+#pragma bss - name(push, "ZEROPAGE")
 
 // GLOBAL VARIABLES
 unsigned char debug;
@@ -25,7 +24,9 @@ unsigned char pad1_new;
 unsigned char short_jump_count;
 unsigned char map_loaded;
 unsigned char collision;
+unsigned char player_in_air;
 unsigned char player_jumping;
+unsigned char player_falling;
 unsigned char collision_L;
 unsigned char collision_R;
 unsigned char collision_U;
@@ -78,9 +79,9 @@ unsigned char projectiles_list[] = {OFF, OFF, OFF, OFF};
 unsigned char projectiles_x[] = {0, 0, 0, 0};
 unsigned char projectiles_y[] = {0, 0, 0, 0};
 
-unsigned char sine_wave[] = {5,8,10,10,8,5,2,0,0,2};
+unsigned char sine_wave[] = {5, 8, 10, 10, 8, 5, 2, 0, 0, 2};
 
-#pragma bss-name(push, "BSS")
+#pragma bss - name(push, "BSS")
 
 unsigned char c_map[240];
 unsigned char c_map2[240]; // not used in this example
@@ -110,8 +111,8 @@ struct Hero BoxGuy1 = {0x4000, 0x8400}; // starting position
 #define HERO_WIDTH 19
 #define HERO_HEIGHT 14
 
-#define MAX_ROOMS (20-1)
-#define MAX_SCROLL (MAX_ROOMS * 0x100)-1
+#define MAX_ROOMS (20 - 1)
+#define MAX_SCROLL (MAX_ROOMS * 0x100) - 1
 #define MIN_SCROLL 0x0000
 // data is exactly 240 bytes, 16 * 15
 // doubles as the collision map data

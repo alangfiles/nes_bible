@@ -1,6 +1,6 @@
 #define COL_DOWN 0x80
 #define COL_ALL 0x40
-#define COL_LADDER 0x20
+#define COL_LADDER 0x01
 
 const unsigned char is_solid[] = {
     COL_DOWN,

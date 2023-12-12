@@ -4,7 +4,7 @@
 
 #define COL_DOWN 0x80
 #define COL_ALL 0x40
-#define COL_LADDER 0x20
+#define COL_LADDER 0x01
 
 
 #define GRAVITY 0x3c
@@ -46,6 +46,7 @@ unsigned char eject_D;			 // from below
 unsigned char eject_U;			 // from up
 unsigned char direction = 1; // facing left or right?
 unsigned char sprite_frame_counter;
+unsigned char frame_counter;
 #define LEFT 0
 #define RIGHT 1
 
@@ -76,6 +77,8 @@ unsigned char projectile_index;
 unsigned char projectiles_list[] = {OFF, OFF, OFF, OFF};
 unsigned char projectiles_x[] = {0, 0, 0, 0};
 unsigned char projectiles_y[] = {0, 0, 0, 0};
+
+unsigned char sine_wave[] = {5,8,10,10,8,5,2,0,0,2};
 
 #pragma bss-name(push, "BSS")
 

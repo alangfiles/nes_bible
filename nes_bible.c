@@ -41,6 +41,7 @@ void main(void)
 
 	while (1)
 	{
+		++frame_counter;
 		// infinite loop
 		ppu_wait_nmi(); // wait till beginning of the frame
 
@@ -197,7 +198,8 @@ void draw_sprites(void)
 	{
 		if (projectiles_list[temp1] != OFF)
 		{
-			oam_meta_spr(projectiles_x[temp1], projectiles_y[temp1], orb1);
+			temp6 = projectiles_y[temp1] + sine_wave[frame_counter % 10];
+			oam_meta_spr(projectiles_x[temp1], temp6, orb1);
 		}
 	}
 
@@ -389,7 +391,7 @@ void movement(void)
 
 	if (pad1_new & PAD_UP)
 	{
-		if (bg_coll_U() == COL_LADDER)
+		if (bg_coll_ladder())
 		{
 			ppu_off();
 		}
@@ -434,7 +436,7 @@ void movement(void)
 			}
 
 			projectiles_x[projectile_index] = high_byte(BoxGuy1.x) + 10;
-			projectiles_y[projectile_index] = high_byte(BoxGuy1.y);
+			projectiles_y[projectile_index] = high_byte(BoxGuy1.y) - 8;
 		}
 	}
 

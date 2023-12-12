@@ -8,23 +8,81 @@ void draw_player_sprites()
     temp_y = 1;
   //
 
+  ++sprite_frame_counter;
+
   if (player_shooting)
   {
     ++player_shooting;
     if (player_shooting < 20)
     {
-      oam_meta_spr(temp_x, temp_y, mosesstandshootright);
+      if (direction == LEFT)
+      {
+        if (player_jumping)
+        {
+          oam_meta_spr(temp_x, temp_y, mosesjumpleftshoot);
+        }
+        else
+        {
+          if (BoxGuy1.vel_x)
+          {
+            if (sprite_frame_counter < 8)
+            {
+              oam_meta_spr(temp_x, temp_y, mosesrunshoot1left);
+            }
+            else if (sprite_frame_counter < 15)
+            {
+              oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
+            }
+            else
+            {
+              sprite_frame_counter = 0;
+              oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
+            }
+          }
+          else
+          {
+            oam_meta_spr(temp_x, temp_y, mosesstandshootleft);
+          }
+        }
+      }
+      else
+      {
+        if (player_jumping)
+        {
+          oam_meta_spr(temp_x, temp_y, mosesjumprightshoot);
+        }
+        else
+        {
+          if (BoxGuy1.vel_x)
+          {
+            if (sprite_frame_counter < 8)
+            {
+              oam_meta_spr(temp_x, temp_y, mosesrunshoot1right);
+            }
+            else if (sprite_frame_counter < 15)
+            {
+              oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
+            }
+            else
+            {
+              sprite_frame_counter = 0;
+              oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
+            }
+          }
+          else
+          {
+            oam_meta_spr(temp_x, temp_y, mosesstandshootright);
+          }
+        }
+      }
     }
     else
     {
       player_shooting = 0;
-      oam_meta_spr(temp_x, temp_y, mosesstandshootright);
     }
   }
   else
   {
-
-    ++sprite_frame_counter;
 
     if (player_jumping && BoxGuy1.vel_y > 0) // aka, falling
     {                                        // jumping

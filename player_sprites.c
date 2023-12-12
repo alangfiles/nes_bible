@@ -13,72 +13,69 @@ void draw_player_sprites()
   if (player_shooting)
   {
     ++player_shooting;
-    if (player_shooting < 20)
+    if (player_shooting > 15)
     {
-      if (direction == LEFT)
+      player_shooting = 0;
+    }
+    if (direction == LEFT)
+    {
+      if (player_in_air)
       {
-        if (player_in_air)
-        {
-          oam_meta_spr(temp_x, temp_y, mosesjumpleftshoot);
-        }
-        else
-        {
-          if (BoxGuy1.vel_x)
-          {
-            if (sprite_frame_counter < 8)
-            {
-              oam_meta_spr(temp_x, temp_y, mosesrunshoot1left);
-            }
-            else if (sprite_frame_counter < 15)
-            {
-              oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
-            }
-            else
-            {
-              sprite_frame_counter = 0;
-              oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
-            }
-          }
-          else
-          {
-            oam_meta_spr(temp_x, temp_y, mosesstandshootleft);
-          }
-        }
+        oam_meta_spr(temp_x, temp_y, mosesjumpleftshoot);
       }
       else
       {
-        if (player_in_air)
+        if (BoxGuy1.vel_x)
         {
-          oam_meta_spr(temp_x, temp_y, mosesjumprightshoot);
-        }
-        else
-        {
-          if (BoxGuy1.vel_x)
+          if (sprite_frame_counter < 8)
           {
-            if (sprite_frame_counter < 8)
-            {
-              oam_meta_spr(temp_x, temp_y, mosesrunshoot1right);
-            }
-            else if (sprite_frame_counter < 15)
-            {
-              oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
-            }
-            else
-            {
-              sprite_frame_counter = 0;
-              oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
-            }
+            oam_meta_spr(temp_x, temp_y, mosesrunshoot1left);
+          }
+          else if (sprite_frame_counter < 15)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
           }
           else
           {
-            oam_meta_spr(temp_x, temp_y, mosesstandshootright);
+            sprite_frame_counter = 0;
+            oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
           }
+        }
+        else
+        {
+          oam_meta_spr(temp_x, temp_y, mosesstandshootleft);
         }
       }
     }
     else
     {
-      player_shooting = 0;
+      if (player_in_air)
+      {
+        oam_meta_spr(temp_x, temp_y, mosesjumprightshoot);
+      }
+      else
+      {
+        if (BoxGuy1.vel_x)
+        {
+          if (sprite_frame_counter < 8)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesrunshoot1right);
+          }
+          else if (sprite_frame_counter < 15)
+          {
+            oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
+          }
+          else
+          {
+            sprite_frame_counter = 0;
+            oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
+          }
+        }
+        else
+        {
+          oam_meta_spr(temp_x, temp_y, mosesstandshootright);
+        }
+      }
     }
   }
   else

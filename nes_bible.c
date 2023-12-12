@@ -364,24 +364,26 @@ void movement(void)
 	{
 		BoxGuy1.vel_y = 0x300; // consistent
 	}
-	BoxGuy1.y += BoxGuy1.vel_y;
+	BoxGuy1.y += BoxGuy1.vel_y; // add gravity to y; (make him go up or down)
 	// player_falling = 1;
 
 	Generic.x = high_byte(BoxGuy1.x);
 	Generic.y = high_byte(BoxGuy1.y);
 
-	if (BoxGuy1.vel_y > 0)
+	if (BoxGuy1.vel_y > 0) // he's falling
 	{
-		if (bg_coll_D())
-		{ // check collision below
+		// player_falling = 1;
+		// player_in_air = 1;
+		if (bg_coll_D()) // if he's collising below
+		{								 // check collision below
+			player_in_air = 0;
+			player_falling = 0;
 			high_byte(BoxGuy1.y) = high_byte(BoxGuy1.y) - eject_D;
 			BoxGuy1.y &= 0xff00;
 			if (BoxGuy1.vel_y > 0)
 			{
 				BoxGuy1.vel_y = 0;
 			}
-			player_in_air = 0;
-			// player_falling = 0;
 		}
 	}
 	else if (BoxGuy1.vel_y < 0)

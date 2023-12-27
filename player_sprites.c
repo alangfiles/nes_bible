@@ -21,7 +21,7 @@ void draw_player_sprites()
     {
       if (player_in_air)
       {
-        oam_meta_spr(temp_x, temp_y, mosesjumpleftshoot);
+        oam_meta_spr(temp_x, temp_y, animate_playerjumpleftshoot_data);
       }
       else
       {
@@ -29,21 +29,21 @@ void draw_player_sprites()
         {
           if (sprite_frame_counter < 8)
           {
-            oam_meta_spr(temp_x, temp_y, mosesrunshoot1left);
+            oam_meta_spr(temp_x, temp_y, animate_playerrunshoot1left_data);
           }
           else if (sprite_frame_counter < 15)
           {
-            oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
+            oam_meta_spr(temp_x, temp_y, animate_playerrunshoot2left_data);
           }
           else
           {
             sprite_frame_counter = 0;
-            oam_meta_spr(temp_x, temp_y, mosesrunshoot2left);
+            oam_meta_spr(temp_x, temp_y, animate_playerrunshoot2left_data);
           }
         }
         else
         {
-          oam_meta_spr(temp_x, temp_y, mosesstandshootleft);
+          oam_meta_spr(temp_x, temp_y, animate_playerstandshootleft_data);
         }
       }
     }
@@ -51,7 +51,7 @@ void draw_player_sprites()
     {
       if (player_in_air)
       {
-        oam_meta_spr(temp_x, temp_y, mosesjumprightshoot);
+        oam_meta_spr(temp_x, temp_y, animate_playerjumprightshoot_data);
       }
       else
       {
@@ -59,21 +59,21 @@ void draw_player_sprites()
         {
           if (sprite_frame_counter < 8)
           {
-            oam_meta_spr(temp_x, temp_y, mosesrunshoot1right);
+            oam_meta_spr(temp_x, temp_y, animate_playerrunshoot1right_data);
           }
           else if (sprite_frame_counter < 15)
           {
-            oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
+            oam_meta_spr(temp_x, temp_y, animate_playerrunshoot2right_data);
           }
           else
           {
             sprite_frame_counter = 0;
-            oam_meta_spr(temp_x, temp_y, mosesrunshoot2right);
+            oam_meta_spr(temp_x, temp_y, animate_playerrunshoot2right_data);
           }
         }
         else
         {
-          oam_meta_spr(temp_x, temp_y, mosesstandshootright);
+          oam_meta_spr(temp_x, temp_y, animate_playerstandshootright_data);
         }
       }
     }
@@ -87,11 +87,11 @@ void draw_player_sprites()
       {
         if (direction == LEFT)
         {
-          oam_meta_spr(temp_x, temp_y, mosesjumpleft);
+          oam_meta_spr(temp_x, temp_y, animate_playerjumpleft_data);
         }
         else
         {
-          oam_meta_spr(temp_x, temp_y, mosesjumpright);
+          oam_meta_spr(temp_x, temp_y, animate_playerjumpright_data);
         }
       }
       else
@@ -101,35 +101,39 @@ void draw_player_sprites()
         {
           if (sprite_frame_counter < 8)
           {
-            oam_meta_spr(temp_x, temp_y, mosesfallwiggle1left);
+            oam_meta_spr(temp_x, temp_y, animate_playerfallwiggle1left_data);
           }
           else if (sprite_frame_counter < 15)
           {
-            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
+            oam_meta_spr(temp_x, temp_y, animate_playerfallwiggle2leftshoot_data);
           }
           else
           {
             sprite_frame_counter = 0;
-            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2left);
+            oam_meta_spr(temp_x, temp_y, animate_playerfallwiggle2leftshoot_data);
           }
         }
         else
         {
           if (sprite_frame_counter < 8)
           {
-            oam_meta_spr(temp_x, temp_y, mosesfallwiggle1right);
+            oam_meta_spr(temp_x, temp_y, animate_playerfallwiggle1right_data);
           }
           else if (sprite_frame_counter < 15)
           {
-            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
+            oam_meta_spr(temp_x, temp_y, animate_playerfallwiggle2right_data);
           }
           else
           {
             sprite_frame_counter = 0;
-            oam_meta_spr(temp_x, temp_y, mosesfallwiggle2right);
+            oam_meta_spr(temp_x, temp_y, animate_playerfallwiggle2right_data);
           }
         }
       }
+    }
+    else if (player_on_ladder)
+    {
+      oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
     }
     else if (direction == LEFT) // not jumping
     {
@@ -138,50 +142,50 @@ void draw_player_sprites()
       {
         if (sprite_frame_counter < 4)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun1left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun1left_data);
         }
         else if (sprite_frame_counter < 8)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun2left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun2left_data);
         }
         else if (sprite_frame_counter < 12)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun3left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun3left_data);
         }
         else if (sprite_frame_counter < 16)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun4left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun4left_data);
         }
         else if (sprite_frame_counter < 20)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun5left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun5left_data);
         }
         else if (sprite_frame_counter < 24)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun4left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun4left_data);
         }
         else if (sprite_frame_counter < 28)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun3left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun3left_data);
         }
         else if (sprite_frame_counter < 32)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun2left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun2left_data);
         }
         else if (sprite_frame_counter < 35)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun1left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun1left_data);
         }
         else
         {
           sprite_frame_counter = 0;
-          oam_meta_spr(temp_x, temp_y, mosesrun1left);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun1left_data);
         }
       }
       else
       {
         sprite_frame_counter = 0;
-        oam_meta_spr(temp_x, temp_y, mosesstandleft);
+        oam_meta_spr(temp_x, temp_y, animate_playerstandleft_data);
       }
     }
     else
@@ -190,50 +194,50 @@ void draw_player_sprites()
       {
         if (sprite_frame_counter < 4)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun1right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun1right_data);
         }
         else if (sprite_frame_counter < 8)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun2right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun2right_data);
         }
         else if (sprite_frame_counter < 12)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun3right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun3right_data);
         }
         else if (sprite_frame_counter < 16)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun4right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun4right_data);
         }
         else if (sprite_frame_counter < 20)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun5right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun5right_data);
         }
         else if (sprite_frame_counter < 24)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun4right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun4right_data);
         }
         else if (sprite_frame_counter < 28)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun3right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun3right_data);
         }
         else if (sprite_frame_counter < 32)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun2right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun2right_data);
         }
         else if (sprite_frame_counter < 35)
         {
-          oam_meta_spr(temp_x, temp_y, mosesrun1right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun1right_data);
         }
         else
         {
           sprite_frame_counter = 0;
-          oam_meta_spr(temp_x, temp_y, mosesrun1right);
+          oam_meta_spr(temp_x, temp_y, animate_playerrun1right_data);
         }
       }
       else
       {
         sprite_frame_counter = 0;
-        oam_meta_spr(temp_x, temp_y, mosesstandright);
+        oam_meta_spr(temp_x, temp_y, animate_playerstandright_data);
       }
     }
   }

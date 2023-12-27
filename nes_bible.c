@@ -151,8 +151,8 @@ void handle_scrolling(void)
 
 void load_room(void)
 {
-	set_data_pointer(busylevel_list[0]);
-	set_mt_pointer(metatiles1);
+	set_data_pointer(level1_list[0]);
+	set_mt_pointer(metatile);
 	for (y = 0;; y += 0x20)
 	{
 		for (x = 0;; x += 0x20)
@@ -169,7 +169,7 @@ void load_room(void)
 	}
 
 	// a little bit in the next room
-	set_data_pointer(busylevel_list[1]);
+	set_data_pointer(level1_list[1]);
 	for (y = 0;; y += 0x20)
 	{
 		x = 0;
@@ -183,7 +183,7 @@ void load_room(void)
 
 	// copy the room to the collision map
 	// the second one should auto-load with the scrolling code
-	memcpy(c_map, busylevel_0, 240);
+	memcpy(c_map, level1_list[0], 240);
 	temp_cmap1 = 0;
 }
 
@@ -199,7 +199,7 @@ void draw_sprites(void)
 		if (projectiles_list[temp1] != OFF)
 		{
 			temp6 = projectiles_y[temp1] + sine_wave[frame_counter % 10];
-			oam_meta_spr(projectiles_x[temp1], temp6, orb1);
+			oam_meta_spr(projectiles_x[temp1], temp6, animate_orb1_data);
 		}
 	}
 
@@ -346,23 +346,32 @@ void movement(void)
 	// gravity
 
 	// BoxGuy1.vel_y is signed
-	if (BoxGuy1.vel_y < 0x300)
+	if (player_on_ladder && bg_coll_ladder())
 	{
-		if (BoxGuy1.vel_y < 0)
-		{
-			player_jumping = 1;
-			player_falling = 0;
-		}
-		else
-		{
-			player_jumping = 0;
-			player_falling = 1;
-		}
-		BoxGuy1.vel_y += GRAVITY;
+		BoxGuy1.vel_y = 0;
 	}
 	else
 	{
-		BoxGuy1.vel_y = 0x300; // consistent
+		player_on_ladder = 0;
+		if (BoxGuy1.vel_y < 0x300)
+		{
+
+			if (BoxGuy1.vel_y < 0)
+			{
+				player_jumping = 1;
+				player_falling = 0;
+			}
+			else
+			{
+				player_jumping = 0;
+				player_falling = 1;
+			}
+			BoxGuy1.vel_y += GRAVITY;
+		}
+		else
+		{
+			BoxGuy1.vel_y = 0x300; // consistent
+		}
 	}
 	BoxGuy1.y += BoxGuy1.vel_y; // add gravity to y; (make him go up or down)
 	// player_falling = 1;
@@ -378,6 +387,7 @@ void movement(void)
 		{								 // check collision below
 			player_in_air = 0;
 			player_falling = 0;
+			player_on_ladder = 0;
 			high_byte(BoxGuy1.y) = high_byte(BoxGuy1.y) - eject_D;
 			BoxGuy1.y &= 0xff00;
 			if (BoxGuy1.vel_y > 0)
@@ -407,7 +417,9 @@ void movement(void)
 	{
 		if (bg_coll_ladder())
 		{
-			ppu_off();
+			player_on_ladder = 1;
+			BoxGuy1.vel_y = 0;
+			BoxGuy1.vel_x = 0;
 		}
 	}
 
@@ -565,7 +577,7 @@ void draw_screen_L(void)
 	// 	temp1 = temp1 - 1;
 	// }
 
-	set_data_pointer(busylevel_list[temp1]);
+	set_data_pointer(level1_list[temp1]);
 	nt = temp1 & 1;
 	x = pseudo_scroll_x & 0xff;
 
@@ -622,7 +634,7 @@ void draw_screen_R(void)
 
 	temp1 = pseudo_scroll_x >> 8;
 
-	set_data_pointer(busylevel_list[temp1]);
+	set_data_pointer(level1_list[temp1]);
 	nt = temp1 & 1;
 	x = pseudo_scroll_x & 0xff;
 
@@ -696,12 +708,12 @@ void new_cmap(void)
 	map = room & 1; // even or odd?
 	if (!map)
 	{
-		memcpy(c_map, busylevel_list[room], 240);
+		memcpy(c_map, level1_list[room], 240);
 		temp_cmap1 = room;
 	}
 	else
 	{
-		memcpy(c_map2, busylevel_list[room], 240);
+		memcpy(c_map2, level1_list[room], 240);
 		temp_cmap2 = room;
 	}
 }

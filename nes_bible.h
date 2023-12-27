@@ -7,7 +7,7 @@
 #define COL_LADDER 0x01
 
 #define GRAVITY 0x3c
-#define MAX_SPEED 0x240
+#define MAX_SPEED 0x180
 #define JUMP_VEL -0x600
 #define MAX_RIGHT 0x9000
 #define MAX_LEFT 0x4000
@@ -15,7 +15,7 @@
 #define MAX_PROJECTILES 3
 #define PROJECTILE_COOLDOWN_FRAMES 10
 
-#pragma bss - name(push, "ZEROPAGE")
+#pragma bss-name(push, "ZEROPAGE")
 
 // GLOBAL VARIABLES
 unsigned char debug;
@@ -25,6 +25,7 @@ unsigned char short_jump_count;
 unsigned char map_loaded;
 unsigned char collision;
 unsigned char player_in_air;
+unsigned char player_on_ladder;
 unsigned char player_jumping;
 unsigned char player_falling;
 unsigned char collision_L;
@@ -81,7 +82,7 @@ unsigned char projectiles_y[] = {0, 0, 0, 0};
 
 unsigned char sine_wave[] = {5, 8, 10, 10, 8, 5, 2, 0, 0, 2};
 
-#pragma bss - name(push, "BSS")
+#pragma bss-name(push, "BSS")
 
 unsigned char c_map[240];
 unsigned char c_map2[240]; // not used in this example
@@ -111,14 +112,11 @@ struct Hero BoxGuy1 = {0x4000, 0x8400}; // starting position
 #define HERO_WIDTH 19
 #define HERO_HEIGHT 14
 
-#define MAX_ROOMS (20 - 1)
-#define MAX_SCROLL (MAX_ROOMS * 0x100) - 1
+#define MAX_ROOMS (11-1)
+#define MAX_SCROLL (MAX_ROOMS * 0x100)-1
 #define MIN_SCROLL 0x0000
 // data is exactly 240 bytes, 16 * 15
 // doubles as the collision map data
-
-const unsigned char palette_bg[] = {
-		0x21, 0x10, 0x00, 0x0f, 0x21, 0x0f, 0x1a, 0x2a, 0x21, 0x0f, 0x16, 0x27, 0x21, 0x30, 0x27, 0x2a};
 
 const unsigned char palette_sp[] = {
 		0x0f, 0x06, 0x24, 0x36,
@@ -129,18 +127,9 @@ const unsigned char palette_sp[] = {
 // 5 bytes per metatile definition, tile TL, TR, BL, BR, palette 0-3
 // T means top, B means bottom, L left,R right
 // 51 maximum # of metatiles = 255 bytes
+#include "NES_ST/metatile.h"
 
-/*const unsigned char metatiles1[]={
-	2, 2, 2, 2,  3,
-	4, 4, 4, 4,  1,
-	9, 9, 9, 9,  2,
-	5, 6, 8, 7,  1,
-	5, 6, 8, 7,  0
-};*/
-// moved to this file...
-#include "NES_ST/metatiles1.h"
-
-#include "BG/busylevel.c"
+#include "BG/Leveltng.c"
 // data is exactly 240 bytes, 16 * 15
 // doubles as the collision map data
 

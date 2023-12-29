@@ -48,6 +48,9 @@ void main(void)
 
 void reset(void)
 {
+	ppu_wait_nmi();
+	ppu_off(); // screen off
+
 	scroll_x = 0;
 	scroll_y = 0;
 	room = 0;
@@ -72,8 +75,6 @@ void reset(void)
 	BoxGuy1.x = 0x4000;
 	BoxGuy1.y = 0x8400;
 
-	ppu_off(); // screen off
-
 	ppu_mask(0); // grayscale mode
 	// load the palettes
 	pal_bg(palette_bg);
@@ -91,8 +92,6 @@ void reset(void)
 	set_scroll_y(0xff); // shift the bg down 1 pixel
 
 	ppu_on_all(); // turn on screen
-
-	room = 0;
 }
 
 void projectile_movement(void)

@@ -17,6 +17,61 @@ void main(void)
 {
 	// test
 
+	reset();
+
+	while (1)
+	{
+		++frame_counter;
+		// infinite loop
+		ppu_wait_nmi(); // wait till beginning of the frame
+
+		pad1 = pad_poll(0); // read the first controller
+		pad1_new = get_pad_new(0);
+
+		movement();
+
+		projectile_movement();
+
+		set_scroll_x(scroll_x);
+		set_scroll_y(scroll_y);
+
+		handle_scrolling();
+
+		draw_sprites();
+
+		if (death)
+		{
+			reset();
+		}
+	}
+}
+
+void reset(void)
+{
+	scroll_x = 0;
+	scroll_y = 0;
+	room = 0;
+	map_loaded = 0;
+	player_in_air = 0;
+	player_on_ladder = 0;
+	player_jumping = 0;
+	player_falling = 0;
+	short_jump_count = 0;
+	projectile_cooldown = 0;
+	projectile_count = 0;
+	projectile_index = 0;
+	player_shooting = 0;
+	direction = 1;
+	frame_counter = 0;
+	sprite_frame_counter = 0;
+	r_scroll_frames = 0;
+	l_scroll_frames = 0;
+	collision = 0;
+	player_shooting = 0;
+	death = 0;
+	BoxGuy1.x = 0x4000;
+	BoxGuy1.y = 0x8400;
+
 	ppu_off(); // screen off
 
 	ppu_mask(0); // grayscale mode
@@ -38,27 +93,6 @@ void main(void)
 	ppu_on_all(); // turn on screen
 
 	room = 0;
-
-	while (1)
-	{
-		++frame_counter;
-		// infinite loop
-		ppu_wait_nmi(); // wait till beginning of the frame
-
-		pad1 = pad_poll(0); // read the first controller
-		pad1_new = get_pad_new(0);
-
-		movement();
-
-		projectile_movement();
-
-		set_scroll_x(scroll_x);
-		set_scroll_y(scroll_y);
-
-		handle_scrolling();
-
-		draw_sprites();
-	}
 }
 
 void projectile_movement(void)
@@ -312,6 +346,11 @@ void movement(void)
 	Generic.y = high_byte(BoxGuy1.y);
 	Generic.width = HERO_WIDTH;
 	Generic.height = HERO_HEIGHT;
+
+	if (BoxGuy1.y > 0xf000)
+	{
+		++death;
+	}
 
 	if (BoxGuy1.vel_x < 0)
 	{

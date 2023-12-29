@@ -73,6 +73,7 @@ unsigned char temp_x;
 unsigned char temp_y;
 unsigned char temp_room;
 unsigned char player_shooting;
+unsigned char death;
 unsigned char projectile_cooldown;
 unsigned char projectile_count;
 unsigned char projectile_index;
@@ -143,6 +144,7 @@ void draw_screen_L(void);
 void new_cmap(void);
 void handle_scrolling(void);
 void projectile_movement(void);
+void reset(void);
 
 char bg_coll_L(void);
 char bg_coll_R(void);

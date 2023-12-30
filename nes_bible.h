@@ -5,6 +5,7 @@
 #define COL_DOWN 0x80
 #define COL_ALL 0x40
 #define COL_LADDER 0x01
+#define TURN_OFF 0xff
 
 #define GRAVITY 0x3c
 #define MAX_SPEED 0x180
@@ -14,6 +15,8 @@
 
 #define MAX_PROJECTILES 3
 #define PROJECTILE_COOLDOWN_FRAMES 10
+
+
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -57,6 +60,7 @@ unsigned char x; // room loader code
 unsigned char y;
 unsigned char nt;
 unsigned char index;
+unsigned char index2;
 unsigned char room = 0;
 unsigned char map;
 unsigned int scroll_x;
@@ -65,6 +69,7 @@ unsigned char scroll_count;
 unsigned int pseudo_scroll_x;
 // unsigned int pseudo_scroll_y;
 // unsigned char L_R_switch;
+const unsigned char * pointer;
 unsigned char l_scroll_frames;
 unsigned char r_scroll_frames;
 unsigned int old_x;
@@ -82,6 +87,14 @@ unsigned char projectiles_x[] = {0, 0, 0, 0};
 unsigned char projectiles_y[] = {0, 0, 0, 0};
 
 unsigned char sine_wave[] = {5, 8, 10, 10, 8, 5, 2, 0, 0, 2};
+//for shuffling 16 enemies
+const unsigned char shuffle_array[]={
+0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,
+0,2,4,6,8,10,12,14,1,3,5,7,9,11,13,15,
+15,13,11,9,7,5,3,1,14,12,10,8,6,4,2,0	
+};
+unsigned char offset;
 
 #pragma bss-name(push, "BSS")
 
@@ -97,6 +110,7 @@ struct Base
 };
 
 struct Base Generic;
+struct Base Generic2;
 
 struct Hero
 {
@@ -126,6 +140,20 @@ const unsigned char palette_sp[] = {
 		0x0f, 0x20, 0x21, 0x26,
 		0x0f, 0x21, 0x20, 0x10};
 
+
+#define MAX_ENEMY 2
+unsigned char enemy_x[MAX_ENEMY];
+unsigned char enemy_y[MAX_ENEMY];
+unsigned char enemy_active[MAX_ENEMY];
+unsigned char enemy_room[MAX_ENEMY];
+unsigned char enemy_actual_x[MAX_ENEMY];
+unsigned char enemy_type[MAX_ENEMY];
+const unsigned char * enemy_anim[MAX_ENEMY];
+unsigned char enemy_frames;
+
+#define ENEMY_WIDTH 13
+#define ENEMY_HEIGHT 13
+
 // 5 bytes per metatile definition, tile TL, TR, BL, BR, palette 0-3
 // T means top, B means bottom, L left,R right
 // 51 maximum # of metatiles = 255 bytes
@@ -145,10 +173,14 @@ void draw_screen_L(void);
 void new_cmap(void);
 void handle_scrolling(void);
 void projectile_movement(void);
+void check_spr_objects(void);
+void enemy_moves(void);
 void reset(void);
+void sprite_obj_init(void);
 
 char bg_coll_L(void);
 char bg_coll_R(void);
 char bg_coll_U(void);
 char bg_coll_D(void);
 char bg_coll_D2(void);
+char get_position(void);

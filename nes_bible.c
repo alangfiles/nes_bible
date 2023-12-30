@@ -21,6 +21,7 @@ void main(void)
 
 	while (1)
 	{
+		gray_line();
 		++frame_counter;
 		// infinite loop
 		ppu_wait_nmi(); // wait till beginning of the frame
@@ -29,7 +30,7 @@ void main(void)
 		pad1_new = get_pad_new(0);
 
 		movement();
-
+		check_spr_objects();
 		projectile_movement();
 
 		set_scroll_x(scroll_x);
@@ -219,6 +220,8 @@ void load_room(void)
 	// the second one should auto-load with the scrolling code
 	memcpy(c_map, level1_list[0], 240);
 	temp_cmap1 = 0;
+
+	sprite_obj_init();
 }
 
 void draw_sprites(void)
@@ -228,12 +231,36 @@ void draw_sprites(void)
 
 	draw_player_sprites();
 
+	// draw projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 	{
 		if (projectiles_list[temp1] != OFF)
 		{
 			temp6 = projectiles_y[temp1] + sine_wave[frame_counter % 10];
 			oam_meta_spr(projectiles_x[temp1], temp6, animate_orb1_data);
+		}
+	}
+
+	// draw enemy sprites
+	offset = get_frame_count() & 3;
+	offset = offset << 4; // * 16, the size of the shuffle array
+	for (index = 0; index < MAX_ENEMY; ++index)
+	{
+		index2 = shuffle_array[offset];
+		++offset;
+		temp_y = enemy_y[index2];
+		if (temp_y == TURN_OFF)
+			continue;
+		if (!enemy_active[index2])
+			continue;
+		temp_x = enemy_x[index2];
+		if (temp_x == 0)
+			temp_x = 1; // problems with x = 0
+		if (temp_x > 0xf0)
+			continue;
+		if (temp_y < 0xf0)
+		{
+			oam_meta_spr(temp_x, temp_y, enemy_anim[index2]);
 		}
 	}
 
@@ -754,5 +781,121 @@ void new_cmap(void)
 	{
 		memcpy(c_map2, level1_list[room], 240);
 		temp_cmap2 = room;
+	}
+}
+
+char get_position(void)
+{
+	// is it in range ? return 1 if yes
+
+	temp5 -= scroll_x;
+	temp_x = temp5 & 0xff;
+	if (high_byte(temp5))
+		return 0;
+	return 1;
+}
+
+void check_spr_objects(void)
+{
+	// ++enemy_frames;
+	Generic2.x = high_byte(BoxGuy1.x);
+	// mark each object "active" if they are, and get the screen x
+
+	for (index = 0; index < MAX_ENEMY; ++index)
+	{
+		enemy_active[index] = 0; // default to zero
+		if (enemy_y[index] != TURN_OFF)
+		{
+			high_byte(temp5) = enemy_room[index];
+			low_byte(temp5) = enemy_actual_x[index];
+			temp1 = enemy_active[index] = get_position();
+			if (temp1 == 0)
+				continue;
+			enemy_x[index] = temp_x; // screen x coords
+
+			enemy_moves(); // if active, do it's moves now
+		}
+	}
+}
+
+void enemy_moves(void)
+{
+	if (enemy_type[index] == ENEMY_SNAIL)
+	{
+		// for bg collisions
+		Generic.x = enemy_x[index];
+		Generic.y = enemy_y[index] + 6; // mid point
+		Generic.width = 13;
+		Generic.height = 15;
+
+		// note, Generic2 is the hero's x position
+
+		enemy_anim[index] = animate_snail1_data;
+		// if (enemy_frames & 1)
+		// 	return; // half speed
+		if (enemy_x[index] > Generic2.x)
+		{
+			Generic.x -= 1; // test going left
+			bg_collision_fast();
+			if (collision_L)
+				return;
+			// else, no collision, do the move.
+			if (enemy_actual_x[index] == 0)
+				--enemy_room[index];
+			--enemy_actual_x[index];
+		}
+		else if (enemy_x[index] < Generic2.x)
+		{
+			Generic.x += 1; // test going right
+			bg_collision_fast();
+			if (collision_R)
+				return;
+			++enemy_actual_x[index];
+			if (enemy_actual_x[index] == 0)
+				++enemy_room[index];
+		}
+	}
+}
+
+// cc65 is very slow if 2 arrays/pointers are on the same line, so I
+// broke them into 2 separate lines with temp1 as a passing variable
+void sprite_obj_init(void)
+{
+
+	pointer = enemy_list[room];
+	for (index = 0, index2 = 0; index < MAX_ENEMY; ++index)
+	{
+
+		enemy_x[index] = 0;
+
+		temp1 = pointer[index2]; // get a byte of data
+		enemy_y[index] = temp1;
+
+		if (temp1 == TURN_OFF)
+			break;
+
+		++index2;
+
+		enemy_active[index] = 0;
+
+		temp1 = pointer[index2]; // get a byte of data
+		enemy_room[index] = temp1;
+
+		++index2;
+
+		temp1 = pointer[index2]; // get a byte of data
+		enemy_actual_x[index] = temp1;
+
+		++index2;
+
+		temp1 = pointer[index2]; // get a byte of data
+		enemy_type[index] = temp1;
+
+		++index2;
+	}
+
+	for (++index; index < MAX_ENEMY; ++index)
+	{
+		enemy_y[index] = TURN_OFF;
 	}
 }

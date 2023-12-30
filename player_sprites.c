@@ -1,5 +1,100 @@
 void draw_player_sprites()
 {
+
+  // draw health meter
+  switch (BoxGuy1.health)
+  {
+  case 28:
+    oam_meta_spr(0x16, 0x16, animate_meter28_data);
+    break;
+  case 27:
+    oam_meta_spr(0x16, 0x16, animate_meter27_data);
+    break;
+  case 26:
+    oam_meta_spr(0x16, 0x16, animate_meter26_data);
+    break;
+  case 25:
+    oam_meta_spr(0x16, 0x16, animate_meter25_data);
+    break;
+  case 24:
+    oam_meta_spr(0x16, 0x16, animate_meter24_data);
+    break;
+  case 23:
+    oam_meta_spr(0x16, 0x16, animate_meter23_data);
+    break;
+  case 22:
+    oam_meta_spr(0x16, 0x16, animate_meter22_data);
+    break;
+  case 21:
+    oam_meta_spr(0x16, 0x16, animate_meter21_data);
+    break;
+  case 20:
+    oam_meta_spr(0x16, 0x16, animate_meter20_data);
+    break;
+  case 19:
+    oam_meta_spr(0x16, 0x16, animate_meter19_data);
+    break;
+  case 18:
+    oam_meta_spr(0x16, 0x16, animate_meter18_data);
+    break;
+  case 17:
+    oam_meta_spr(0x16, 0x16, animate_meter17_data);
+    break;
+  case 16:
+    oam_meta_spr(0x16, 0x16, animate_meter16_data);
+    break;
+  case 15:
+    oam_meta_spr(0x16, 0x16, animate_meter15_data);
+    break;
+  case 14:
+    oam_meta_spr(0x16, 0x16, animate_meter14_data);
+    break;
+  case 13:
+    oam_meta_spr(0x16, 0x16, animate_meter13_data);
+    break;
+  case 12:
+    oam_meta_spr(0x16, 0x16, animate_meter12_data);
+    break;
+  case 11:
+    oam_meta_spr(0x16, 0x16, animate_meter11_data);
+    break;
+  case 10:
+    oam_meta_spr(0x16, 0x16, animate_meter10_data);
+    break;
+  case 9:
+    oam_meta_spr(0x16, 0x16, animate_meter9_data);
+    break;
+  case 8:
+    oam_meta_spr(0x16, 0x16, animate_meter8_data);
+    break;
+  case 7:
+    oam_meta_spr(0x16, 0x16, animate_meter7_data);
+    break;
+  case 6:
+    oam_meta_spr(0x16, 0x16, animate_meter6_data);
+    break;
+  case 5:
+    oam_meta_spr(0x16, 0x16, animate_meter5_data);
+    break;
+  case 4:
+    oam_meta_spr(0x16, 0x16, animate_meter4_data);
+    break;
+  case 3:
+    oam_meta_spr(0x16, 0x16, animate_meter3_data);
+    break;
+  case 2:
+    oam_meta_spr(0x16, 0x16, animate_meter2_data);
+    break;
+  case 1:
+    oam_meta_spr(0x16, 0x16, animate_meter1_data);
+    break;
+  default:
+    oam_meta_spr(0x16, 0x16, animate_meter0_data);
+    break;
+  }
+
+  // player stuff
+
   temp_x = BoxGuy1.x >> 8;
   temp_y = BoxGuy1.y >> 8;
   if (temp_x == 0)

@@ -104,6 +104,7 @@ struct Hero
 	unsigned int y;
 	signed int vel_x; // speed, signed, low byte is sub-pixel
 	signed int vel_y;
+	unsigned char health;
 };
 
 struct Hero BoxGuy1 = {0x4000, 0x8400}; // starting position

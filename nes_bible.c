@@ -74,6 +74,7 @@ void reset(void)
 	death = 0;
 	BoxGuy1.x = 0x4000;
 	BoxGuy1.y = 0x8400;
+	BoxGuy1.health = 28;
 
 	ppu_mask(0); // grayscale mode
 	// load the palettes

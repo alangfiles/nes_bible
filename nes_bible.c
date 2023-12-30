@@ -256,6 +256,8 @@ void draw_sprites(void)
 		index2 = shuffle_array[offset];
 		++offset;
 		temp_y = enemy_y[index2];
+		if (enemy_health[index2] == 0)
+			continue;
 		if (temp_y == TURN_OFF)
 			continue;
 		if (!enemy_active[index2])

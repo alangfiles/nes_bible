@@ -78,6 +78,12 @@ void reset(void)
 	BoxGuy1.health = 28;
 	invul_frames = 0;
 
+	// clear all projectiles
+	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
+	{
+		projectiles_list[temp1] = OFF;
+	}
+
 	ppu_mask(0); // grayscale mode
 	// load the palettes
 	pal_bg(palette_bg);
@@ -101,11 +107,11 @@ void projectile_movement(void)
 {
 	for (temp1 = 0; temp1 < 3; ++temp1)
 	{
-		if (projectiles_list[temp1] != OFF)
+		if (projectiles_list[temp1] != TURN_OFF)
 		{
 			if (projectiles_x[temp1] > 250)
 			{
-				projectiles_list[temp1] = OFF;
+				projectiles_list[temp1] = TURN_OFF;
 			}
 			else
 			{
@@ -810,7 +816,7 @@ void check_spr_objects(void)
 			high_byte(temp5) = enemy_room[index];
 			low_byte(temp5) = enemy_actual_x[index];
 			temp1 = enemy_active[index] = get_position();
-			if (temp1 == 0)
+			if (temp1 == 0 || enemy_health[index] == 0)
 				continue;
 			enemy_x[index] = temp_x; // screen x coords
 
@@ -833,6 +839,21 @@ void enemy_moves(void)
 		if (BoxGuy1.health == 0)
 		{
 			death = 1;
+		}
+	}
+
+	// check enemy collision with projectiles
+	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
+	{
+		if (projectiles_list[temp1] != TURN_OFF)
+		{
+			if (
+					(enemy_x[index] > projectiles_x[temp1] - 5 && enemy_x[index] < projectiles_x[temp1] + 5) &&
+					(enemy_y[index] > projectiles_y[temp1] - 30 && enemy_y[index] < projectiles_y[temp1] + 30))
+			{
+				projectiles_list[temp1] = TURN_OFF;
+				--enemy_health[index];
+			}
 		}
 	}
 
@@ -915,6 +936,11 @@ void sprite_obj_init(void)
 
 		temp1 = pointer[index2]; // get a byte of data
 		enemy_actual_x[index] = temp1;
+
+		++index2;
+
+		temp1 = pointer[index2]; // get a byte of data
+		enemy_health[index] = temp1;
 
 		++index2;
 

@@ -209,13 +209,13 @@ enum
 
 // NOTE, after testing, we can only handle 4 enemies on the same screen
 
-// y, room, x
+// y, room, x, health, type,
 // y = TURN_OFF end of list
 const unsigned char level_1_enemies[] = {
 
-    0xc0, 1, 0xc0, ENEMY_SNAIL,
-    0x80, 2, 0xe0, ENEMY_SNAIL,
-    0x80, 3, 0x30, ENEMY_SNAIL,
+    0xc0, 1, 0xc0, 2, ENEMY_SNAIL,
+    0x80, 2, 0xe0, 2, ENEMY_SNAIL,
+    0x80, 3, 0x30, 2, ENEMY_SNAIL,
     TURN_OFF};
 
 const unsigned char *const enemy_list[] = {

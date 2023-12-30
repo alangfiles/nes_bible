@@ -146,6 +146,7 @@ const unsigned char palette_sp[] = {
 unsigned char enemy_x[MAX_ENEMY];
 unsigned char enemy_y[MAX_ENEMY];
 unsigned char enemy_active[MAX_ENEMY];
+unsigned char enemy_health[MAX_ENEMY];
 unsigned char enemy_room[MAX_ENEMY];
 unsigned char enemy_actual_x[MAX_ENEMY];
 unsigned char enemy_type[MAX_ENEMY];

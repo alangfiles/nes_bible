@@ -76,6 +76,7 @@ void reset(void)
 	BoxGuy1.x = 0x4000;
 	BoxGuy1.y = 0x8400;
 	BoxGuy1.health = 28;
+	invul_frames = 0;
 
 	ppu_mask(0); // grayscale mode
 	// load the palettes
@@ -797,7 +798,7 @@ char get_position(void)
 
 void check_spr_objects(void)
 {
-	// ++enemy_frames;
+	++enemy_frames;
 	Generic2.x = high_byte(BoxGuy1.x);
 	// mark each object "active" if they are, and get the screen x
 
@@ -820,6 +821,21 @@ void check_spr_objects(void)
 
 void enemy_moves(void)
 {
+	if (invul_frames > 0)
+	{
+		--invul_frames;
+	}
+	// if enemy and player are touching, reduce health
+	if (enemy_x[index] == Generic2.x && invul_frames == 0)
+	{
+		--BoxGuy1.health;
+		invul_frames = 30;
+		if (BoxGuy1.health == 0)
+		{
+			death = 1;
+		}
+	}
+
 	if (enemy_type[index] == ENEMY_SNAIL)
 	{
 		// for bg collisions
@@ -830,9 +846,23 @@ void enemy_moves(void)
 
 		// note, Generic2 is the hero's x position
 
-		enemy_anim[index] = animate_snail1_data;
-		// if (enemy_frames & 1)
-		// 	return; // half speed
+		if (enemy_frames < 10)
+		{
+			enemy_anim[index] = animate_snail1_data;
+		}
+		else if (enemy_frames < 20)
+		{
+			enemy_anim[index] = animate_snail2_data;
+		}
+		else if (enemy_frames < 30)
+		{
+			enemy_anim[index] = animate_snail3_data;
+		}
+		else
+		{
+			enemy_anim[index] = animate_snail3_data;
+			enemy_frames = 0;
+		}
 		if (enemy_x[index] > Generic2.x)
 		{
 			Generic.x -= 1; // test going left

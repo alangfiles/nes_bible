@@ -79,6 +79,7 @@ unsigned char temp_y;
 unsigned char temp_room;
 unsigned char player_shooting;
 unsigned char death;
+unsigned char invul_frames;
 unsigned char projectile_cooldown;
 unsigned char projectile_count;
 unsigned char projectile_index;
@@ -141,7 +142,7 @@ const unsigned char palette_sp[] = {
 		0x0f, 0x21, 0x20, 0x10};
 
 
-#define MAX_ENEMY 2
+#define MAX_ENEMY 16
 unsigned char enemy_x[MAX_ENEMY];
 unsigned char enemy_y[MAX_ENEMY];
 unsigned char enemy_active[MAX_ENEMY];

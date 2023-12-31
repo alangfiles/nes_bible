@@ -1,10 +1,22 @@
-/*	example code for cc65, for NES
- *  draw a BG with metatile system
- *	, also sprite collisions with BG
- *  ...testing 256 metatiles (240 actually)
- *	using neslib
- *	Doug Fraker 2018
+/*	Unnamed NES BIBLE Game
+
+	An attempt at making the best Bible game for the NES
+	By BrianAndAlanGames
+
+	Based off work by NESDoug
  */
+
+/*
+TODO List:
+
+	- fix the scrolling (1st screen glitch)
+	- enemy collision with ground (not just walls)
+	- reeling animation / hitstun action for player
+	- reeling animation / hitstun action for enemies
+	- ladder climbing
+	- full level
+	- game modes
+*/
 
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"

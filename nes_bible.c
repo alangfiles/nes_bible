@@ -9,13 +9,13 @@
 /*
 TODO List:
 
-	- fix the scrolling (1st screen glitch)
-	- enemy collision with ground (not just walls)
-	- reeling animation / hitstun action for player
-	- reeling animation / hitstun action for enemies
-	- ladder climbing
-	- full level
-	- game modes
+	[] fix the scrolling (1st screen glitch)
+	[] enemy collision with ground (not just walls)
+	[] reeling animation / hitstun action for player
+	[] reeling animation / hitstun action for enemies
+	[] ladder climbing
+	[] full level
+	[/] game modes
 */
 
 #include "LIB/neslib.h"

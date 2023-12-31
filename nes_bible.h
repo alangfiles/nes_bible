@@ -67,8 +67,16 @@ unsigned int scroll_x;
 unsigned int scroll_y;
 unsigned char scroll_count;
 unsigned int pseudo_scroll_x;
-// unsigned int pseudo_scroll_y;
-// unsigned char L_R_switch;
+
+unsigned char song;
+#define MAX_SONGS 2
+enum {SONG_GAME, SONG_PAUSE};
+enum {SFX_JUMP, SFX_DING, SFX_NOISE};
+
+unsigned char game_mode;
+enum {MODE_TITLE, MODE_GAME, MODE_PAUSE, MODE_SWITCH, MODE_END, 
+MODE_GAME_OVER, MODE_RESET};
+
 const unsigned char * pointer;
 unsigned char l_scroll_frames;
 unsigned char r_scroll_frames;

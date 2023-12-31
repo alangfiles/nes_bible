@@ -33,28 +33,79 @@ void main(void)
 
 	while (1)
 	{
-		gray_line();
-		++frame_counter;
-		// infinite loop
-		ppu_wait_nmi(); // wait till beginning of the frame
-
-		pad1 = pad_poll(0); // read the first controller
-		pad1_new = get_pad_new(0);
-
-		movement();
-		check_spr_objects();
-		projectile_movement();
-
-		set_scroll_x(scroll_x);
-		set_scroll_y(scroll_y);
-
-		handle_scrolling();
-
-		draw_sprites();
-
-		if (death)
+		while (game_mode == MODE_TITLE)
 		{
-			reset();
+			// unused for title screen
+			ppu_wait_nmi();
+
+			pad1 = pad_poll(0); // read the first controller
+			pad1_new = get_pad_new(0);
+			if (pad1_new & PAD_START)
+			{
+				pal_fade_to(4, 0); // fade to black
+				ppu_off();
+				// load game mode
+				game_mode = MODE_GAME;
+				// song = SONG_GAME;
+				// music_play(song); //no music yet
+				ppu_on_all();
+				pal_bright(4); // back to normal brightness
+			}
+		}
+		while (game_mode == MODE_GAME)
+		{
+			gray_line();
+			++frame_counter;
+			// infinite loop
+			ppu_wait_nmi(); // wait till beginning of the frame
+
+			pad1 = pad_poll(0); // read the first controller
+			pad1_new = get_pad_new(0);
+
+			if (pad1_new & PAD_START)
+			{
+				game_mode = MODE_PAUSE;
+				// song = SONG_PAUSE;
+				// music_play(song);
+				// color_emphasis(0x01);
+				ppu_mask(0b00011001); // grayscale mode
+
+				break; // out of the game loop
+			}
+
+			movement();
+			check_spr_objects();
+			projectile_movement();
+
+			set_scroll_x(scroll_x);
+			set_scroll_y(scroll_y);
+
+			handle_scrolling();
+
+			draw_sprites();
+
+			if (death)
+			{
+				reset();
+			}
+		}
+		while (game_mode == MODE_PAUSE)
+		{
+			ppu_wait_nmi();
+
+			pad1 = pad_poll(0); // read the first controller
+			pad1_new = get_pad_new(0);
+
+			// draw_sprites();
+
+			if (pad1_new & PAD_START)
+			{
+				game_mode = MODE_GAME;
+				// song = SONG_GAME;
+				// music_play(song);
+				// color_emphasis(COL_EMP_NORMAL);
+				ppu_mask(0b00011000); // grayscale mode
+			}
 		}
 	}
 }
@@ -89,6 +140,7 @@ void reset(void)
 	BoxGuy1.y = 0x8400;
 	BoxGuy1.health = 28;
 	invul_frames = 0;
+	game_mode = MODE_GAME;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)

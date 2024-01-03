@@ -11,10 +11,12 @@ TODO List:
 
 	[] fix the scrolling (1st screen glitch)
 	[] enemy collision with ground (not just walls)
+	[] enemies colide with each other
 	[] reeling animation / hitstun action for player
 	[] reeling animation / hitstun action for enemies
 	[] ladder climbing
 	[] full level
+	[] change death to be a certain collision, not just over screen edge?
 	[/] game modes
 */
 
@@ -308,7 +310,7 @@ void draw_sprites(void)
 		if (projectiles_list[temp1] != OFF)
 		{
 			temp6 = projectiles_y[temp1] + sine_wave[frame_counter % 10];
-			oam_meta_spr(projectiles_x[temp1], temp6, animate_orb1_data);
+			oam_meta_spr(projectiles_x[temp1], temp6, animate_orb0_data);
 		}
 	}
 
@@ -935,19 +937,19 @@ void enemy_moves(void)
 
 		if (enemy_frames < 10)
 		{
-			enemy_anim[index] = animate_snail1_data;
+			enemy_anim[index] = animate_snail1left_data;
 		}
 		else if (enemy_frames < 20)
 		{
-			enemy_anim[index] = animate_snail2_data;
+			enemy_anim[index] = animate_snail2left_data;
 		}
 		else if (enemy_frames < 30)
 		{
-			enemy_anim[index] = animate_snail3_data;
+			enemy_anim[index] = animate_snail3left_data;
 		}
 		else
 		{
-			enemy_anim[index] = animate_snail3_data;
+			enemy_anim[index] = animate_snail3left_data;
 			enemy_frames = 0;
 		}
 		if (enemy_x[index] > Generic2.x)

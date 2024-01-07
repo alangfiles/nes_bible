@@ -9,6 +9,7 @@
 
 #define GRAVITY 0x3c
 #define MAX_SPEED 0x180
+#define MAX_LADDER_SPEED 0x120
 #define JUMP_VEL -0x600
 #define MAX_RIGHT 0x9000
 #define MAX_LEFT 0x4000

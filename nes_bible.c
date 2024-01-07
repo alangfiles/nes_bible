@@ -489,7 +489,26 @@ void movement(void)
 	// BoxGuy1.vel_y is signed
 	if (player_on_ladder && bg_coll_ladder())
 	{
-		BoxGuy1.vel_y = 0;
+		if (pad1 & PAD_DOWN)
+		{
+			BoxGuy1.vel_y += ACCEL;
+			if (BoxGuy1.vel_y > MAX_LADDER_SPEED)
+			{
+				BoxGuy1.vel_y = MAX_LADDER_SPEED;
+			}
+		}
+		else if (pad1 & PAD_UP)
+		{
+			BoxGuy1.vel_y -= ACCEL;
+			if (BoxGuy1.vel_y < -MAX_LADDER_SPEED)
+			{
+				BoxGuy1.vel_y = -MAX_LADDER_SPEED;
+			}
+		}
+		else
+		{
+			BoxGuy1.vel_y = 0;
+		}
 	}
 	else
 	{

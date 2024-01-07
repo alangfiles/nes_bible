@@ -175,9 +175,50 @@ void draw_player_sprites()
   }
   else
   {
-
-    if (player_in_air) // aka, falling
-    {                  // jumping
+    if (player_on_ladder)
+    {
+      if (BoxGuy1.vel_y != 0)
+      {
+        if (sprite_frame_counter < 10)
+        {
+          oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+          return;
+        }
+        else if (sprite_frame_counter < 20)
+        {
+          oam_meta_spr(temp_x, temp_y, animate_playerclimb2_data);
+          return;
+        }
+        else if (sprite_frame_counter < 30)
+        {
+          oam_meta_spr(temp_x, temp_y, animate_playerclimb3_data);
+          return;
+        }
+        else if (sprite_frame_counter < 40)
+        {
+          oam_meta_spr(temp_x, temp_y, animate_playerclimb2_data);
+          return;
+        }
+        if (sprite_frame_counter < 50)
+        {
+          oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+          return;
+        }
+        else
+        {
+          sprite_frame_counter = 0;
+          oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+          return;
+        }
+      }
+      else
+      {
+        oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+        return;
+      }
+    }
+    else if (player_in_air) // aka, falling
+    {                       // jumping
       if (player_jumping)
       {
         if (direction == LEFT)
@@ -226,10 +267,7 @@ void draw_player_sprites()
         }
       }
     }
-    else if (player_on_ladder)
-    {
-      oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
-    }
+
     else if (direction == LEFT) // not jumping
     {
 

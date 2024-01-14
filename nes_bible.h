@@ -144,9 +144,12 @@ struct Hero BoxGuy1 = {0x4000, 0x8400}; // starting position
 #define HERO_WIDTH 19
 #define HERO_HEIGHT 14
 
-#define MAX_ROOMS (11-1)
-#define MAX_SCROLL (MAX_ROOMS * 0x100)-1
+// #define MAX_ROOMS (11-1)
+// #define MAX_SCROLL (MAX_ROOMS * 0x100)-1
 #define MIN_SCROLL 0x0000
+
+unsigned char max_rooms;
+unsigned int max_scroll;
 // data is exactly 240 bytes, 16 * 15
 // doubles as the collision map data
 

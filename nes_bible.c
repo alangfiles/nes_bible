@@ -88,11 +88,13 @@ void main(void)
 
 			if (level_up)
 			{
+				pal_fade_to(4, 0); // fade to black
 				game_mode = MODE_SWITCH;
 				level_up = 0;
 				room = 0;
+				scroll_x = 0;
 				++level;
-				load_room();
+				ppu_off();
 			}
 			else if (death)
 			{
@@ -137,14 +139,14 @@ void main(void)
 				oam_clear();
 				scroll_x = 0;
 				set_scroll_x(scroll_x);
-				if (level < 3)
+				if (level < 9)
 				{
 					load_room();
 					game_mode = MODE_GAME;
 					ppu_on_all();
 					pal_bright(4); // back to normal brighness
 					BoxGuy1.x = 0x4000;
-					BoxGuy1.y = 0x8400;
+					BoxGuy1.y = 0x2400;
 				}
 			}
 		}
@@ -334,6 +336,10 @@ void load_room(void)
 	// the second one should auto-load with the scrolling code
 	memcpy(c_map, stage1_levels_list[offset], 240);
 	temp_cmap1 = 0;
+
+	// init the max_room and max_scroll
+	max_rooms = Level_max_rooms[level];
+	max_scroll = (max_rooms * 0x100) - 1;
 
 	sprite_obj_init();
 }
@@ -753,7 +759,7 @@ void movement(void)
 			new_cmap();
 			map_loaded = 1; // only do once
 		}
-		if (room <= MAX_ROOMS)
+		if (room <= Level_max_rooms[level])
 		{
 			temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
 			if (temp1 > 3)
@@ -763,9 +769,9 @@ void movement(void)
 		}
 	}
 
-	if (scroll_x >= MAX_SCROLL)
+	if (scroll_x >= max_scroll)
 	{
-		scroll_x = MAX_SCROLL; // stop scrolling right, end of level
+		scroll_x = max_scroll; // stop scrolling right, end of level
 		BoxGuy1.x = temp5;		 // but allow the x position to go all the way right
 		if (high_byte(BoxGuy1.x) >= 0xe0)
 		{
@@ -1051,10 +1057,7 @@ void enemy_moves(void)
 void sprite_obj_init(void)
 {
 
-	offset = Level_offsets[level];
-	offset += room;
-
-	pointer = stage_1_enemies[offset];
+	pointer = Enemy_list[level];
 	for (index = 0, index2 = 0; index < MAX_ENEMY; ++index)
 	{
 

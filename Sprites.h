@@ -2,7 +2,6 @@
 #define B3 0
 #define OAM_PRIO 0
 // add any other things needed
-
 const unsigned char animate_implosion1_data[] = {
 
 		0, 0, 0x2e, 3,
@@ -517,6 +516,36 @@ const unsigned char animate_playerclimb3_data[] = {
 
 		8, 8, 0x22, 0,
 		16, 8, 0x27, 0,
+		0x80
+
+};
+
+const unsigned char animate_recoilleft_data[] = {
+
+		0, -8, 0x18, 0 | B3 | OAM_PRIO,
+		8, -8, 0x19, 0,
+		0, 0, 0x65, 0,
+		8, 0, 0x68, 0,
+
+		0, 8, 0x45, 0,
+		8, 8, 0x4c, 0,
+		4, -7, 0x0b, 2,
+		15, 9, 0x4d, 0,
+		0x80
+
+};
+
+const unsigned char animate_recoilright_data[] = {
+
+		16, -8, 0x18, 0 | B3 | OAM_FLIP_H | OAM_PRIO,
+		8, -8, 0x19, 0 | OAM_FLIP_H,
+		16, 0, 0x65, 0 | OAM_FLIP_H,
+		8, 0, 0x68, 0 | OAM_FLIP_H,
+
+		16, 8, 0x45, 0 | OAM_FLIP_H,
+		8, 8, 0x4c, 0 | OAM_FLIP_H,
+		12, -7, 0x0b, 2 | OAM_FLIP_H,
+		1, 9, 0x4d, 0 | OAM_FLIP_H,
 		0x80
 
 };
@@ -1677,6 +1706,8 @@ const unsigned char *const animate_list[] = {
 		animate_playerclimb1_data,
 		animate_playerclimb2_data,
 		animate_playerclimb3_data,
+		animate_recoilleft_data,
+		animate_recoilright_data,
 		animate_playerstandright_data,
 		animate_playerstandleft_data,
 		animate_playerstandshootleft_data,
@@ -1760,6 +1791,4 @@ const unsigned char *const animate_list[] = {
 		animate_mole7_data,
 		animate_mole8_data,
 		animate_spider_data,
-		animate_mouse_data
-
-};
+		animate_mouse_data};

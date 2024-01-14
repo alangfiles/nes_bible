@@ -56,7 +56,7 @@ void main(void)
 		}
 		while (game_mode == MODE_GAME)
 		{
-			gray_line();
+			// gray_line();
 			++frame_counter;
 			// infinite loop
 			ppu_wait_nmi(); // wait till beginning of the frame
@@ -88,6 +88,7 @@ void main(void)
 
 			if (death)
 			{
+				pal_fade_to(4, 0); // fade to black
 				reset();
 			}
 		}
@@ -115,8 +116,8 @@ void main(void)
 void reset(void)
 {
 	ppu_wait_nmi();
-	ppu_off(); // screen off
-
+	ppu_off();		 // screen off
+	pal_bright(4); // back to normal brightness
 	scroll_x = 0;
 	scroll_y = 0;
 	room = 0;
@@ -309,7 +310,7 @@ void draw_sprites(void)
 	{
 		if (projectiles_list[temp1] != OFF)
 		{
-			temp6 = projectiles_y[temp1] + sine_wave[frame_counter % 10];
+			temp6 = projectiles_y[temp1]; //+ sine_wave[frame_counter % 10];
 			oam_meta_spr(projectiles_x[temp1], temp6, animate_orb0_data);
 		}
 	}
@@ -373,11 +374,23 @@ void draw_sprites(void)
 void movement(void)
 {
 
+	if (player_in_hitstun > 0)
+	{
+		if (direction == LEFT)
+		{
+			BoxGuy1.vel_x += DECEL;
+		}
+		else
+		{
+			BoxGuy1.vel_x -= DECEL;
+		}
+	}
+
 	// handle x
 
 	old_x = BoxGuy1.x;
 
-	if (pad1 & PAD_LEFT)
+	if (pad1 & PAD_LEFT && !player_in_hitstun)
 	{
 		direction = LEFT;
 
@@ -396,7 +409,7 @@ void movement(void)
 				BoxGuy1.vel_x = -MAX_SPEED;
 		}
 	}
-	else if (pad1 & PAD_RIGHT)
+	else if (pad1 & PAD_RIGHT && !player_in_hitstun)
 	{
 
 		direction = RIGHT;
@@ -922,6 +935,7 @@ void enemy_moves(void)
 	if (enemy_x[index] == Generic2.x && invul_frames == 0)
 	{
 		--BoxGuy1.health;
+		player_in_hitstun = 15;
 		invul_frames = 30;
 		if (BoxGuy1.health == 0)
 		{
@@ -971,26 +985,35 @@ void enemy_moves(void)
 			enemy_anim[index] = animate_snail3left_data;
 			enemy_frames = 0;
 		}
-		if (enemy_x[index] > Generic2.x)
+		if (frame_counter % 3 == 0)
 		{
-			Generic.x -= 1; // test going left
-			bg_collision_fast();
-			if (collision_L)
-				return;
-			// else, no collision, do the move.
-			if (enemy_actual_x[index] == 0)
-				--enemy_room[index];
-			--enemy_actual_x[index];
-		}
-		else if (enemy_x[index] < Generic2.x)
-		{
-			Generic.x += 1; // test going right
-			bg_collision_fast();
-			if (collision_R)
-				return;
-			++enemy_actual_x[index];
-			if (enemy_actual_x[index] == 0)
-				++enemy_room[index];
+
+			if (enemy_x[index] > Generic2.x)
+			{
+
+				Generic.x -= 1;
+
+				Generic.x -= 1; // test going left
+				bg_collision_fast();
+				if (collision_L)
+					return;
+				// else, no collision, do the move.
+				if (enemy_actual_x[index] == 0)
+					--enemy_room[index];
+				--enemy_actual_x[index];
+			}
+			else if (enemy_x[index] < Generic2.x)
+			{
+
+				Generic.x += 1; // test going right
+
+				bg_collision_fast();
+				if (collision_R)
+					return;
+				++enemy_actual_x[index];
+				if (enemy_actual_x[index] == 0)
+					++enemy_room[index];
+			}
 		}
 	}
 }

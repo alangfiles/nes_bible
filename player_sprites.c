@@ -1,6 +1,5 @@
-void draw_player_sprites()
+void draw_player_health_meter()
 {
-
   // draw health meter
   switch (BoxGuy1.health)
   {
@@ -92,9 +91,14 @@ void draw_player_sprites()
     oam_meta_spr(0x16, 0x16, animate_meter0_data);
     break;
   }
+}
+
+void draw_player_sprites()
+{
+
+  draw_player_health_meter();
 
   // player stuff
-
   temp_x = BoxGuy1.x >> 8;
   temp_y = BoxGuy1.y >> 8;
   if (temp_x == 0)
@@ -104,6 +108,20 @@ void draw_player_sprites()
   //
 
   ++sprite_frame_counter;
+
+  if (player_in_hitstun)
+  {
+    player_in_hitstun--;
+    if (direction == LEFT)
+    {
+      oam_meta_spr(temp_x, temp_y, animate_recoilleft_data);
+    }
+    else
+    {
+      oam_meta_spr(temp_x, temp_y, animate_recoilright_data);
+    }
+    return;
+  }
 
   if (player_shooting)
   {

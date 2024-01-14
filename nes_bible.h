@@ -30,6 +30,7 @@ unsigned char map_loaded;
 unsigned char collision;
 unsigned char player_in_air;
 unsigned char player_on_ladder;
+unsigned char player_in_hitstun;
 unsigned char player_jumping;
 unsigned char player_falling;
 unsigned char collision_L;

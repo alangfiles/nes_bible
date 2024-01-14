@@ -56,7 +56,7 @@ void main(void)
 		}
 		while (game_mode == MODE_GAME)
 		{
-			// gray_line();
+			gray_line();
 			++frame_counter;
 			// infinite loop
 			ppu_wait_nmi(); // wait till beginning of the frame
@@ -86,7 +86,15 @@ void main(void)
 
 			draw_sprites();
 
-			if (death)
+			if (level_up)
+			{
+				game_mode = MODE_SWITCH;
+				level_up = 0;
+				room = 0;
+				++level;
+				load_room();
+			}
+			else if (death)
 			{
 				pal_fade_to(4, 0); // fade to black
 				reset();
@@ -108,6 +116,36 @@ void main(void)
 				// music_play(song);
 				// color_emphasis(COL_EMP_NORMAL);
 				ppu_mask(0b00011000); // grayscale mode
+			}
+		}
+		while (game_mode == MODE_SWITCH)
+		{
+			ppu_wait_nmi();
+			++bright_count;
+			if (bright_count >= 0x10)
+			{ // fade out
+				bright_count = 0;
+				--bright;
+				if (bright != 0xff)
+					pal_bright(bright); // fade out
+			}
+			set_scroll_x(scroll_x);
+
+			if (bright == 0xff)
+			{ // now switch rooms
+				ppu_off();
+				oam_clear();
+				scroll_x = 0;
+				set_scroll_x(scroll_x);
+				if (level < 3)
+				{
+					load_room();
+					game_mode = MODE_GAME;
+					ppu_on_all();
+					pal_bright(4); // back to normal brighness
+					BoxGuy1.x = 0x4000;
+					BoxGuy1.y = 0x8400;
+				}
 			}
 		}
 	}
@@ -143,6 +181,7 @@ void reset(void)
 	BoxGuy1.health = 28;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
+	level = 0;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -259,7 +298,9 @@ void handle_scrolling(void)
 
 void load_room(void)
 {
-	set_data_pointer(level1_list[0]);
+	offset = Level_offsets[level];
+	offset += room;
+	set_data_pointer(stage1_levels_list[offset]);
 	set_mt_pointer(metatile);
 	for (y = 0;; y += 0x20)
 	{
@@ -277,7 +318,7 @@ void load_room(void)
 	}
 
 	// a little bit in the next room
-	set_data_pointer(level1_list[1]);
+	set_data_pointer(stage1_levels_list[offset + 1]);
 	for (y = 0;; y += 0x20)
 	{
 		x = 0;
@@ -291,7 +332,7 @@ void load_room(void)
 
 	// copy the room to the collision map
 	// the second one should auto-load with the scrolling code
-	memcpy(c_map, level1_list[0], 240);
+	memcpy(c_map, stage1_levels_list[offset], 240);
 	temp_cmap1 = 0;
 
 	sprite_obj_init();
@@ -463,7 +504,7 @@ void movement(void)
 
 	if (BoxGuy1.y > 0xf000)
 	{
-		++death;
+		++level_up;
 	}
 
 	if (BoxGuy1.vel_x < 0)
@@ -744,7 +785,10 @@ void draw_screen_L(void)
 	// 	temp1 = temp1 - 1;
 	// }
 
-	set_data_pointer(level1_list[temp1]);
+	offset = Level_offsets[level];
+	offset += temp1; // in place of room?!?
+
+	set_data_pointer(stage1_levels_list[offset]);
 	nt = temp1 & 1;
 	x = pseudo_scroll_x & 0xff;
 
@@ -799,9 +843,13 @@ void draw_screen_R(void)
 	// scrolling to the right, draw metatiles as we go
 	pseudo_scroll_x = scroll_x + 0x120;
 
+	// TODO might need to put in offset here?
 	temp1 = pseudo_scroll_x >> 8;
 
-	set_data_pointer(level1_list[temp1]);
+	offset = Level_offsets[level];
+	offset += temp1; // in place of room?!?
+
+	set_data_pointer(stage1_levels_list[offset]);
 	nt = temp1 & 1;
 	x = pseudo_scroll_x & 0xff;
 
@@ -854,33 +902,19 @@ void draw_screen_R(void)
 // copy a new collision map to one of the 2 c_map arrays
 void new_cmap(void)
 {
-	// ppu_off();
-	// ppu_wait_nmi();
-	// ppu_on_all();
-	// todo: figure out which cmap we need
-	//  if ((scroll_x & 0xff) < 4)
-	//  {
-	//  	new_cmap_r();
-	//  }
 
-	// if ((scroll_x & 0xff) > 0xfb)
-	// {
-	// 	new_cmap_l();
-	// }
-
-	// do we need to load a new collision map? (scrolled into a new room)
-	// copy a new collision map to one of the 2 c_map arrays
-	// room = ((scroll_x >> 8) + 1); // high byte = room, one to the right
+	offset = Level_offsets[level];
+	offset += room;
 
 	map = room & 1; // even or odd?
 	if (!map)
 	{
-		memcpy(c_map, level1_list[room], 240);
+		memcpy(c_map, stage1_levels_list[offset], 240);
 		temp_cmap1 = room;
 	}
 	else
 	{
-		memcpy(c_map2, level1_list[room], 240);
+		memcpy(c_map2, stage1_levels_list[offset], 240);
 		temp_cmap2 = room;
 	}
 }
@@ -1017,7 +1051,10 @@ void enemy_moves(void)
 void sprite_obj_init(void)
 {
 
-	pointer = enemy_list[room];
+	offset = Level_offsets[level];
+	offset += room;
+
+	pointer = stage_1_enemies[offset];
 	for (index = 0, index2 = 0; index < MAX_ENEMY; ++index)
 	{
 

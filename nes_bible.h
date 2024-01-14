@@ -47,6 +47,9 @@ unsigned int tempint;
 unsigned int temp_playerlocation;
 unsigned char temp_cmap1;
 unsigned char temp_cmap2;
+unsigned char level;
+unsigned char offset;
+unsigned char level_up;
 unsigned char eject_L;			 // from the left
 unsigned char eject_R;			 // remember these from the collision sub routine
 unsigned char eject_D;			 // from below
@@ -84,6 +87,8 @@ unsigned char l_scroll_frames;
 unsigned char r_scroll_frames;
 unsigned int old_x;
 unsigned int old_y;
+unsigned char bright;
+unsigned char bright_count;
 unsigned char temp_x;
 unsigned char temp_y;
 unsigned char temp_room;
@@ -171,7 +176,7 @@ unsigned char enemy_frames;
 // 51 maximum # of metatiles = 255 bytes
 #include "NES_ST/metatile.h"
 
-#include "BG/Leveltng.c"
+#include "BG/Stage1/Stage1.c"
 // data is exactly 240 bytes, 16 * 15
 // doubles as the collision map data
 

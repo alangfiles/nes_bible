@@ -125,7 +125,6 @@ void reset(void)
 	player_in_air = 0;
 	player_on_ladder = 0;
 	player_jumping = 0;
-	player_falling = 0;
 	short_jump_count = 0;
 	projectile_cooldown = 0;
 	projectile_count = 0;
@@ -532,12 +531,10 @@ void movement(void)
 			if (BoxGuy1.vel_y < 0)
 			{
 				player_jumping = 1;
-				player_falling = 0;
 			}
 			else
 			{
 				player_jumping = 0;
-				player_falling = 1;
 			}
 			BoxGuy1.vel_y += GRAVITY;
 		}
@@ -547,19 +544,16 @@ void movement(void)
 		}
 	}
 	BoxGuy1.y += BoxGuy1.vel_y; // add gravity to y; (make him go up or down)
-	// player_falling = 1;
 
 	Generic.x = high_byte(BoxGuy1.x);
 	Generic.y = high_byte(BoxGuy1.y);
 
 	if (BoxGuy1.vel_y > 0) // he's falling
 	{
-		// player_falling = 1;
 		// player_in_air = 1;
 		if (bg_coll_D()) // if he's collising below
 		{								 // check collision below
 			player_in_air = 0;
-			player_falling = 0;
 			player_on_ladder = 0;
 			high_byte(BoxGuy1.y) = high_byte(BoxGuy1.y) - eject_D;
 			BoxGuy1.y &= 0xff00;

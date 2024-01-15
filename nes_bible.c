@@ -338,7 +338,7 @@ void load_room(void)
 	temp_cmap1 = 0;
 
 	// init the max_room and max_scroll
-	max_rooms = Level_max_rooms[level];
+	max_rooms = Level_max_rooms[level] - 1;
 	max_scroll = (max_rooms * 0x100) - 1;
 
 	sprite_obj_init();
@@ -386,6 +386,7 @@ void draw_sprites(void)
 		}
 	}
 
+	debug = 1;
 	if (debug)
 	{
 		// SCROLL_X SPRITES
@@ -719,32 +720,36 @@ void movement(void)
 			map_loaded = 1; // only do once
 		}
 
-		if (room == 0)
-		{
-			if (scroll_x > 0)
-			{
-				temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
-				if (temp1 > 3)
-					temp1 = 3; // max scroll change
-				if (scroll_x < 3)
-				{
-					temp1 = scroll_x;
-				}
-				scroll_x -= temp1;																	 // scroll the window
-				high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) + temp1; // add the offset to the guy
-			}
-			else
-			{
-				BoxGuy1.x = temp5;
-			}
-		}
+		// temp5 is the NEXT x location.
+		// if (room == 0)
+		// {
+		// 	if (scroll_x > 0)
+		// 	{
+		// 		temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
+		// 		if (temp1 > 3)
+		// 			temp1 = 3; // max scroll change
+		// 		if (scroll_x < 3)
+		// 		{
+		// 			temp1 = scroll_x;
+		// 		}
+		// 		if (max_rooms > 1)
+		// 		{
+		// 			scroll_x -= temp1;																	 // scroll the window
+		// 			high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) + temp1; // add the offset to the guy
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		BoxGuy1.x = temp5;
+		// 	}
+		// }
 
-		if (room >= 1)
+		// I think there's some overflow here. gotta make sure scroll_x doesn't go bonkers.
+		temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
+		if (temp1 > 3)
+			temp1 = 3; // max scroll change
+		if (max_rooms > 1 && room != 0)
 		{
-			// I think there's some overflow here. gotta make sure scroll_x doesn't go bonkers.
-			temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
-			if (temp1 > 3)
-				temp1 = 3;																				 // max scroll change
 			scroll_x -= temp1;																	 // scroll the window
 			high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) + temp1; // add the offset to the guy
 		}
@@ -752,28 +757,31 @@ void movement(void)
 
 	if (BoxGuy1.x > MAX_RIGHT)
 	{
-		if (!map_loaded)
+		if (!map_loaded) // gets reset whenever the player's in the middle of the level
 		{
 
 			room = ((scroll_x >> 8) + 1); // high byte = room, one to the right
 			new_cmap();
 			map_loaded = 1; // only do once
 		}
-		if (room <= Level_max_rooms[level])
+		// if (room <= Level_max_rooms[level])
+		// {
+		temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
+		if (temp1 > 3)
+			temp1 = 3; // max scroll change
+		if (max_rooms > 1)
 		{
-			temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
-			if (temp1 > 3)
-				temp1 = 3;																				 // max scroll change
 			scroll_x += temp1;																	 // scroll the window
 			high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) - temp1; // sub the offet from the guy
 		}
+		// }
 	}
 
 	if (scroll_x >= max_scroll)
 	{
-		scroll_x = max_scroll; // stop scrolling right, end of level
-		BoxGuy1.x = temp5;		 // but allow the x position to go all the way right
-		if (high_byte(BoxGuy1.x) >= 0xe0)
+		scroll_x = max_scroll;						// stop scrolling right, end of level
+		BoxGuy1.x = temp5;								// but allow the x position to go all the way right
+		if (high_byte(BoxGuy1.x) >= 0xe0) // but limit how far right he can go
 		{
 			BoxGuy1.x = 0xe000;
 		}

@@ -181,7 +181,7 @@ void reset(void)
 	BoxGuy1.health = 28;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 1; // stay on same level
+	level = 0; // stay on same level
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -556,10 +556,27 @@ void movement(void)
 	// gravity
 
 	// BoxGuy1.vel_y is signed
+
+	if (pad1 & PAD_DOWN)
+	{
+		temp5 = bg_coll_ladder_top_under_player();
+		if (temp5)
+		{
+			BoxGuy1.x = (BoxGuy1.x + 0xF00) & ~0xF00;
+			player_on_ladder = 1;
+			player_on_ladder_pose = 0;
+			player_in_air = 0;
+			BoxGuy1.vel_y = 0;
+			BoxGuy1.vel_x = 0;
+			BoxGuy1.y += 0x800;
+		}
+	}
+
 	if (player_on_ladder && bg_coll_ladder())
 	{
 		if (pad1 & PAD_DOWN)
 		{
+			++player_on_ladder_pose;
 			BoxGuy1.vel_y += ACCEL;
 			if (BoxGuy1.vel_y > MAX_LADDER_SPEED)
 			{
@@ -568,6 +585,7 @@ void movement(void)
 		}
 		else if (pad1 & PAD_UP)
 		{
+			++player_on_ladder_pose;
 			BoxGuy1.vel_y -= ACCEL;
 			if (BoxGuy1.vel_y < -MAX_LADDER_SPEED)
 			{
@@ -635,6 +653,7 @@ void movement(void)
 			// needs to snap player to grid, to nearest 16 pixels
 			// TODO: fix this so it snaps better.
 			BoxGuy1.x = (BoxGuy1.x + 0xF00) & ~0xF00;
+			player_on_ladder_pose = 0;
 			player_on_ladder = 1;
 			player_in_air = 0;
 			BoxGuy1.vel_y = 0;

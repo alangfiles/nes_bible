@@ -1,7 +1,6 @@
 #define B4 0
 #define B3 0
 #define OAM_PRIO 0
-
 const unsigned char animate_bread_data[] = {
 
 		0, 0, 0x0d, 0,
@@ -472,13 +471,13 @@ const unsigned char animate_meter0_data[] = {
 
 const unsigned char animate_playerclimb1_data[] = {
 
-		0, 0, 0x04, 0,
-		8, 0, 0x03, 0,
-		0, 8, 0x14, 0,
-		8, 8, 0x13, 0,
+		0, -8, 0x04, 0,
+		8, -8, 0x03, 0,
+		0, 0, 0x14, 0,
+		8, 0, 0x13, 0,
 
-		0, 16, 0x22, 0,
-		8, 16, 0x25, 0,
+		0, 8, 0x22, 0,
+		8, 8, 0x25, 0,
 		0x80
 
 };
@@ -706,7 +705,7 @@ const unsigned char animate_playerrun3right_data[] = {
 
 };
 
-const unsigned char animate_playerrunahoot1left_data[] = {
+const unsigned char animate_playerrunshoot1left_data[] = {
 
 		0, -8, 0x1a, 0,
 		8, -8, 0x1b, 0,
@@ -755,7 +754,7 @@ const unsigned char animate_playerrunshoot3left_data[] = {
 
 };
 
-const unsigned char animate_playerrushoot1right_data[] = {
+const unsigned char animate_playerrunshoot1right_data[] = {
 
 		8, -8, 0x1a, 0 | OAM_FLIP_H,
 		0, -8, 0x1b, 0 | OAM_FLIP_H,

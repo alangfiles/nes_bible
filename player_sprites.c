@@ -177,8 +177,20 @@ void draw_player_sprites()
       return;
     }
 
-    // todo: figure out how to step through button presses for this
-    oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+    if (player_on_ladder_pose < 30)
+    {
+      oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+    }
+    else if (player_on_ladder_pose < 60)
+    {
+      oam_meta_spr(temp_x, temp_y, animate_playerclimb2_data);
+    }
+    else
+    {
+      oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
+      player_on_ladder_pose = 0;
+    }
+
     return;
   }
   else if (BoxGuy1.vel_x) // running
@@ -190,7 +202,7 @@ void draw_player_sprites()
       {
         if (player_shooting)
         {
-          tempint = animate_playerrunahoot1left_data;
+          tempint = animate_playerrunshoot1left_data;
         }
         else
         {
@@ -202,7 +214,7 @@ void draw_player_sprites()
 
         if (player_shooting)
         {
-          tempint = animate_playerrushoot1right_data;
+          tempint = animate_playerrunshoot1right_data;
         }
         else
         {
@@ -236,7 +248,7 @@ void draw_player_sprites()
         }
       }
     }
-    else if (sprite_frame_counter < 29)
+    else if (sprite_frame_counter < 30)
     {
       sprite_frame_counter = 0;
       if (direction == LEFT)
@@ -263,18 +275,17 @@ void draw_player_sprites()
         }
       }
     }
-    else
+    else if (sprite_frame_counter < 39)
     {
-      sprite_frame_counter = 0;
       if (direction == LEFT)
       {
         if (player_shooting)
         {
-          tempint = animate_playerrunshoot3left_data;
+          tempint = animate_playerrunshoot2left_data;
         }
         else
         {
-          tempint = animate_playerrun3left_data;
+          tempint = animate_playerrun2left_data;
         }
       }
       else
@@ -282,11 +293,38 @@ void draw_player_sprites()
 
         if (player_shooting)
         {
-          tempint = animate_playerrunshoot3right_data;
+          tempint = animate_playerrunshoot2right_data;
         }
         else
         {
-          tempint = animate_playerrun3right_data;
+          tempint = animate_playerrun2right_data;
+        }
+      }
+    }
+    else
+    {
+      sprite_frame_counter = 0;
+      if (direction == LEFT)
+      {
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot2left_data;
+        }
+        else
+        {
+          tempint = animate_playerrun2left_data;
+        }
+      }
+      else
+      {
+
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot2right_data;
+        }
+        else
+        {
+          tempint = animate_playerrun2right_data;
         }
       }
     }

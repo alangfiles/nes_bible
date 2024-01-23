@@ -92,6 +92,18 @@ char bg_coll_ladder(void)
   return 0;
 }
 
+char bg_coll_ladder_top_under_player(void)
+{
+  temp5 = Generic.x + scroll_x + Generic.width;
+  temp_x = (char)temp5; // low byte
+  temp_y = Generic.y + Generic.height;
+  temp_y += 4;
+  if (bg_collision_sub() & COL_LADDER_TOP)
+    return temp_x;
+
+  return 0;
+}
+
 char bg_coll_U(void)
 {
   // check 2 points on the top side

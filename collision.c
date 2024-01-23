@@ -86,7 +86,7 @@ char bg_coll_ladder(void)
   temp_x = (char)temp5; // low byte
   temp_y = Generic.y + Generic.height;
   temp_y -= 2;
-  if (bg_collision_sub() & COL_LADDER)
+  if (bg_collision_sub() & COL_LADDER || bg_collision_sub() & COL_LADDER_TOP)
     return 1;
 
   return 0;
@@ -133,7 +133,7 @@ char bg_coll_D(void)
 
   eject_D = (temp_y + 1) & 0x0f;
 
-  if (bg_collision_sub() & COL_ALL)
+  if (bg_collision_sub() & COL_ALL || bg_collision_sub() & COL_LADDER_TOP)
     return 1;
 
   temp5 = Generic.x + scroll_x + Generic.width;
@@ -141,7 +141,7 @@ char bg_coll_D(void)
   temp_x = (char)temp5;   // low byte
   temp_room = temp5 >> 8; // high byte
 
-  if (bg_collision_sub() & COL_ALL)
+  if (bg_collision_sub() & COL_ALL || bg_collision_sub() & COL_LADDER_TOP)
     return 1;
 
   return 0;

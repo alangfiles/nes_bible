@@ -632,6 +632,9 @@ void movement(void)
 	{
 		if (bg_coll_ladder())
 		{
+			// needs to snap player to grid, to nearest 16 pixels
+			// TODO: fix this so it snaps better.
+			BoxGuy1.x = (BoxGuy1.x + 0xF00) & ~0xF00;
 			player_on_ladder = 1;
 			player_in_air = 0;
 			BoxGuy1.vel_y = 0;

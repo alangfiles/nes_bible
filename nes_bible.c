@@ -12,7 +12,6 @@ TODO List:
 	[] fix the scrolling (1st screen glitch)
 	[] enemy collision with ground (not just walls)
 	[] enemies colide with each other
-	[] reeling animation / hitstun action for player
 	[] reeling animation / hitstun action for enemies
 	[] ladder climbing
 	[] full level
@@ -56,7 +55,7 @@ void main(void)
 		}
 		while (game_mode == MODE_GAME)
 		{
-			gray_line();
+			// gray_line();
 			++frame_counter;
 			// infinite loop
 			ppu_wait_nmi(); // wait till beginning of the frame
@@ -94,6 +93,8 @@ void main(void)
 				room = 0;
 				scroll_x = 0;
 				++level;
+				// BoxGuy1.x = 0x4000;
+				BoxGuy1.y = 0x2400;
 				ppu_off();
 			}
 			else if (death)
@@ -145,8 +146,6 @@ void main(void)
 					game_mode = MODE_GAME;
 					ppu_on_all();
 					pal_bright(4); // back to normal brighness
-					BoxGuy1.x = 0x4000;
-					BoxGuy1.y = 0x2400;
 				}
 			}
 		}
@@ -164,7 +163,7 @@ void reset(void)
 	map_loaded = 0;
 	player_in_air = 0;
 	player_on_ladder = 0;
-	player_jumping = 0;
+	player_running = 0;
 	short_jump_count = 0;
 	projectile_cooldown = 0;
 	projectile_count = 0;
@@ -176,14 +175,13 @@ void reset(void)
 	r_scroll_frames = 0;
 	l_scroll_frames = 0;
 	collision = 0;
-	player_shooting = 0;
 	death = 0;
 	BoxGuy1.x = 0x4000;
 	BoxGuy1.y = 0x8400;
 	BoxGuy1.health = 28;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 0;
+	level = 1; // stay on same level
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -300,7 +298,7 @@ void handle_scrolling(void)
 
 void load_room(void)
 {
-	offset = Level_offsets[level];
+	offset = level_offsets[level];
 	offset += room;
 	set_data_pointer(stage1_levels_list[offset]);
 	set_mt_pointer(metatile);
@@ -338,7 +336,7 @@ void load_room(void)
 	temp_cmap1 = 0;
 
 	// init the max_room and max_scroll
-	max_rooms = Level_max_rooms[level] - 1;
+	max_rooms = level_max_rooms[level] - 1;
 	max_scroll = (max_rooms * 0x100) - 1;
 
 	sprite_obj_init();
@@ -386,7 +384,6 @@ void draw_sprites(void)
 		}
 	}
 
-	debug = 1;
 	if (debug)
 	{
 		// SCROLL_X SPRITES
@@ -509,9 +506,13 @@ void movement(void)
 	Generic.width = HERO_WIDTH;
 	Generic.height = HERO_HEIGHT;
 
-	if (BoxGuy1.y > 0xf000)
+	if (BoxGuy1.y > 0xf800) // top of screen
 	{
-		++level_up;
+		level_up = 1;
+	}
+	else if (BoxGuy1.y > 0xf400) // bottom of screen
+	{
+		death = 1;
 	}
 
 	if (BoxGuy1.vel_x < 0)
@@ -540,6 +541,7 @@ void movement(void)
 			}
 		}
 	}
+
 	// skip collision if vel = 0
 
 	// handle y
@@ -575,15 +577,6 @@ void movement(void)
 		player_on_ladder = 0;
 		if (BoxGuy1.vel_y < 0x300)
 		{
-
-			if (BoxGuy1.vel_y < 0)
-			{
-				player_jumping = 1;
-			}
-			else
-			{
-				player_jumping = 0;
-			}
 			BoxGuy1.vel_y += GRAVITY;
 		}
 		else
@@ -633,6 +626,7 @@ void movement(void)
 		if (bg_coll_ladder())
 		{
 			player_on_ladder = 1;
+			player_in_air = 0;
 			BoxGuy1.vel_y = 0;
 			BoxGuy1.vel_x = 0;
 		}
@@ -640,15 +634,19 @@ void movement(void)
 
 	if (pad1_new & PAD_A)
 	{
-		if (bg_coll_D2())
+		if (player_on_ladder)
+		{
+			player_on_ladder = 0;
+			player_in_air = 1;
+		}
+		else if (bg_coll_D2())
 		{
 			BoxGuy1.vel_y = JUMP_VEL; // JUMP
 			// sfx_play(SFX_JUMP, 0);
 			short_jump_count = 1;
 			player_in_air = 1;
-			player_jumping = 1;
 		}
-	}
+		}
 	if (pad1_new & PAD_B && projectile_cooldown == 0) // shooting
 	{
 
@@ -664,7 +662,7 @@ void movement(void)
 		if (temp2)
 		{
 			projectile_cooldown = PROJECTILE_COOLDOWN_FRAMES;
-			player_shooting = 1;
+			player_shooting = 10;
 			projectile_index = temp1;
 
 			// if player is facing right:
@@ -678,7 +676,7 @@ void movement(void)
 			}
 
 			projectiles_x[projectile_index] = high_byte(BoxGuy1.x) + 10;
-			projectiles_y[projectile_index] = high_byte(BoxGuy1.y) - 8;
+			projectiles_y[projectile_index] = high_byte(BoxGuy1.y);
 		}
 	}
 
@@ -764,7 +762,7 @@ void movement(void)
 			new_cmap();
 			map_loaded = 1; // only do once
 		}
-		// if (room <= Level_max_rooms[level])
+		// if (room <= level_max_rooms[level])
 		// {
 		temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
 		if (temp1 > 3)
@@ -799,7 +797,7 @@ void draw_screen_L(void)
 	// 	temp1 = temp1 - 1;
 	// }
 
-	offset = Level_offsets[level];
+	offset = level_offsets[level];
 	offset += temp1; // in place of room?!?
 
 	set_data_pointer(stage1_levels_list[offset]);
@@ -860,7 +858,7 @@ void draw_screen_R(void)
 	// TODO might need to put in offset here?
 	temp1 = pseudo_scroll_x >> 8;
 
-	offset = Level_offsets[level];
+	offset = level_offsets[level];
 	offset += temp1; // in place of room?!?
 
 	set_data_pointer(stage1_levels_list[offset]);
@@ -917,7 +915,7 @@ void draw_screen_R(void)
 void new_cmap(void)
 {
 
-	offset = Level_offsets[level];
+	offset = level_offsets[level];
 	offset += room;
 
 	map = room & 1; // even or odd?
@@ -1092,12 +1090,11 @@ void sprite_obj_init(void)
 		++index2;
 
 		temp1 = pointer[index2]; // get a byte of data
-		enemy_health[index] = temp1;
-
-		++index2;
-
-		temp1 = pointer[index2]; // get a byte of data
 		enemy_type[index] = temp1;
+		if (enemy_type[index] == ENEMY_SNAIL)
+		{
+			enemy_health[index] = 2; // set enemy health here
+		}
 
 		++index2;
 	}

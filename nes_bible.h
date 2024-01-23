@@ -5,10 +5,11 @@
 #define COL_DOWN 0x80
 #define COL_ALL 0x40
 #define COL_LADDER 0x01
+#define COL_LADDER_TOP 0x02
 #define TURN_OFF 0xff
 
 #define GRAVITY 0x3c
-#define MAX_SPEED 0x180
+#define MAX_SPEED 0x160
 #define MAX_LADDER_SPEED 0x120
 #define JUMP_VEL -0x600
 #define MAX_RIGHT 0x9000
@@ -17,6 +18,10 @@
 #define MAX_PROJECTILES 3
 #define PROJECTILE_COOLDOWN_FRAMES 10
 
+// needed for sprites
+#define B4 0
+#define B3 0
+#define OAM_PRIO 0
 
 
 #pragma bss-name(push, "ZEROPAGE")
@@ -30,8 +35,9 @@ unsigned char map_loaded;
 unsigned char collision;
 unsigned char player_in_air;
 unsigned char player_on_ladder;
+unsigned char player_on_ladder_pose;
 unsigned char player_in_hitstun;
-unsigned char player_jumping;
+unsigned char player_running;
 unsigned char collision_L;
 unsigned char collision_R;
 unsigned char collision_U;
@@ -44,6 +50,7 @@ unsigned char temp4;
 unsigned int temp5;
 unsigned int temp6;
 unsigned int tempint;
+unsigned int tempint2;
 unsigned int temp_playerlocation;
 unsigned char temp_cmap1;
 unsigned char temp_cmap2;

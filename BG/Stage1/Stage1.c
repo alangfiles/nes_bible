@@ -8,18 +8,18 @@
 #include "Leveltng7.c"
 
 const unsigned char *const stage1_levels_list[] = {
-    LEVELTNG_0, LEVELTNG_1, LEVELTNG_2, LEVELTNG_3, LEVELTNG_4, LEVELTNG_5, LEVELTNG_6, LEVELTNG_7, LEVELTNG_8, LEVELTNG_9, LEVELTNG_10,
-    Leveltng2_0,
-    Leveltng3_0, Leveltng3_1, Leveltng3_2, Leveltng3_3,
-    Leveltng4_0,
-    Leveltng5_0, Leveltng5_1, Leveltng5_2, Leveltng5_3, Leveltng5_4,
-    Leveltng6_0,
-    Leveltng7_0};
+    leveltng_0, leveltng_1, leveltng_2, leveltng_3, leveltng_4, leveltng_5, leveltng_6, leveltng_7, leveltng_8, leveltng_9, leveltng_10,
+    leveltng2_0,
+    leveltng3_0, leveltng3_1, leveltng3_2, leveltng3_3,
+    leveltng4_0,
+    leveltng5_0, leveltng5_1, leveltng5_2, leveltng5_3, leveltng5_4,
+    leveltng6_0,
+    leveltng7_0};
 
-const unsigned char Level_max_rooms[] = {
+const unsigned char level_max_rooms[] = {
     11, 1, 4, 1, 5, 1, 1};
 
-const unsigned char Level_offsets[] = {
+const unsigned char level_offsets[] = {
     0, 11, 12, 16, 17, 22, 23, 24};
 
 enum
@@ -33,21 +33,28 @@ enum
 
 // NOTE, after testing, we can only handle 4 enemies on the same screen
 
-// y, room, x, health, type,
+// y, room, x, type,
 // y = TURN_OFF end of list
 const unsigned char level_1_enemies[] = {
 
-    0xc0, 1, 0xc0, 2, ENEMY_SNAIL,
-    0x80, 2, 0xe0, 2, ENEMY_SNAIL,
-    0x80, 4, 0x30, 2, ENEMY_SNAIL,
+    0xc0, 1, 0xc0, ENEMY_SNAIL,
+    0x80, 2, 0xe0, ENEMY_SNAIL,
+    0x80, 4, 0x30, ENEMY_SNAIL,
+    TURN_OFF};
+const unsigned char level_2_enemies[] = {
+    TURN_OFF};
+const unsigned char level_3_enemies[] = {
+    TURN_OFF};
+const unsigned char level_4_enemies[] = {
+    TURN_OFF};
+const unsigned char level_5_enemies[] = {
+    TURN_OFF};
+const unsigned char level_6_enemies[] = {
+    TURN_OFF};
+const unsigned char level_7_enemies[] = {
     TURN_OFF};
 
 const unsigned char *const Enemy_list[] = {
-    level_1_enemies};
-
-// list of transitions to the next room for vertical transitions
-// y, room, x,
-const unsigned char stage_1_transitions[] = {
-
-    0xc0, 11, 0xc0,
-    TURN_OFF};
+    level_1_enemies, level_2_enemies, level_3_enemies,
+    level_4_enemies, level_5_enemies, level_6_enemies,
+    level_7_enemies};

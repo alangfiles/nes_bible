@@ -438,19 +438,22 @@ void movement(void)
 	{
 		direction = LEFT;
 
-		if (BoxGuy1.vel_x >= DECEL)
+		if (!player_on_ladder)
 		{
-			BoxGuy1.vel_x -= DECEL;
-		}
-		else if (BoxGuy1.vel_x > 0)
-		{
-			BoxGuy1.vel_x = 0;
-		}
-		else
-		{
-			BoxGuy1.vel_x -= ACCEL;
-			if (BoxGuy1.vel_x < -MAX_SPEED)
-				BoxGuy1.vel_x = -MAX_SPEED;
+			if (BoxGuy1.vel_x >= DECEL)
+			{
+				BoxGuy1.vel_x -= DECEL;
+			}
+			else if (BoxGuy1.vel_x > 0)
+			{
+				BoxGuy1.vel_x = 0;
+			}
+			else
+			{
+				BoxGuy1.vel_x -= ACCEL;
+				if (BoxGuy1.vel_x < -MAX_SPEED)
+					BoxGuy1.vel_x = -MAX_SPEED;
+			}
 		}
 	}
 	else if (pad1 & PAD_RIGHT && !player_in_hitstun)
@@ -458,19 +461,23 @@ void movement(void)
 
 		direction = RIGHT;
 
-		if (BoxGuy1.vel_x <= DECEL)
+		if (!player_on_ladder)
 		{
-			BoxGuy1.vel_x += DECEL;
-		}
-		else if (BoxGuy1.vel_x < 0)
-		{
-			BoxGuy1.vel_x = 0;
-		}
-		else
-		{
-			BoxGuy1.vel_x += ACCEL;
-			if (BoxGuy1.vel_x >= MAX_SPEED)
-				BoxGuy1.vel_x = MAX_SPEED;
+
+			if (BoxGuy1.vel_x <= DECEL)
+			{
+				BoxGuy1.vel_x += DECEL;
+			}
+			else if (BoxGuy1.vel_x < 0)
+			{
+				BoxGuy1.vel_x = 0;
+			}
+			else
+			{
+				BoxGuy1.vel_x += ACCEL;
+				if (BoxGuy1.vel_x >= MAX_SPEED)
+					BoxGuy1.vel_x = MAX_SPEED;
+			}
 		}
 	}
 	else
@@ -646,7 +653,7 @@ void movement(void)
 			short_jump_count = 1;
 			player_in_air = 1;
 		}
-		}
+	}
 	if (pad1_new & PAD_B && projectile_cooldown == 0) // shooting
 	{
 

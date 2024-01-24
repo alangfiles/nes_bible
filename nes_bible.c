@@ -8,10 +8,10 @@
 
 /*
 TODO List:
-
-	[] fix the scrolling (1st screen glitch)
-	[] fix enemy collision (with ground and other enemies)
 	[] fix bullet speeding up on scroll
+	[] transition to levels (entity list)
+	[] sign posts / text in game?
+	[] fix enemy collision (with ground and other enemies)
 	[] full level
 	[] change death to be a certain collision, not just over screen edge?
 	[] change level up to be certain collision, not just oer the screen
@@ -188,7 +188,7 @@ void reset(void)
 	game_mode = MODE_GAME;
 	level = 0; // debug, change starting level
 	room = 0;	 // debug, hacky, change starting room
-	debug = 0;
+	debug = 1;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -228,43 +228,29 @@ void projectile_movement(void)
 			else
 			{
 
-				temp2 = 2; // projectile speed
-
+				// This code adjusts for when the screen is scrolling too.
 				if (projectiles_list[temp1] == RIGHT)
 				{
 
-					// TODO, i think this doesn't get called.
-					if (BoxGuy1.x > (MAX_RIGHT - 4) && pad1_new & PAD_RIGHT)
+					if ((BoxGuy1.x <= MAX_LEFT) && (pad1 & PAD_LEFT))
 					{
-						// max scroll change
-						temp3 = (BoxGuy1.x - MAX_RIGHT - 4) >> 8;
-						if (temp3 > 3)
-							temp3 = 3; // max scroll change
-						temp2 += temp3;
+						projectiles_x[temp1] += 3;
 					}
-					if (BoxGuy1.x < (MAX_LEFT + 4) && pad1_new & PAD_LEFT)
+					else
 					{
-						temp3 = (MAX_LEFT + 4 - BoxGuy1.x) >> 8;
-						if (temp3 > 3)
-							temp3 = 3;
-
-						temp2 += temp3;
+						projectiles_x[temp1] += 2;
 					}
-
-					projectiles_x[temp1] += temp2;
 				}
 				else if (projectiles_list[temp1] == LEFT)
 				{
-					if (BoxGuy1.x > (MAX_RIGHT - 4) && pad1_new & PAD_RIGHT)
+					if ((BoxGuy1.x >= MAX_RIGHT) && (pad1 & PAD_RIGHT))
 					{
-						temp2 += 3;
+						projectiles_x[temp1] -= 3;
 					}
-					if (BoxGuy1.x < (MAX_LEFT + 4) && pad1_new & PAD_LEFT)
+					else
 					{
-						temp2 -= 1;
+						projectiles_x[temp1] -= 2;
 					}
-
-					projectiles_x[temp1] -= temp2;
 				}
 			}
 		}

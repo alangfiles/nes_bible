@@ -176,10 +176,12 @@ void draw_player_sprites()
       if (direction == LEFT)
       {
         tempint = animate_playerclimbshootleft_data;
+        player_on_ladder_pose = 0;
       }
       else
       {
         tempint = animate_playerclimbshootright_data;
+        player_on_ladder_pose = PLAYER_LADDER_1_FRAMES;
       }
       oam_meta_spr(temp_x, temp_y, tempint);
       return;

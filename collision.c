@@ -82,19 +82,19 @@ char bg_coll_R(void)
 
 char bg_coll_ladder(void)
 {
-  temp5 = Generic.x + scroll_x + Generic.width;
+  temp5 = Generic.x + scroll_x + 7;
   temp_x = (char)temp5; // low byte
   temp_y = Generic.y + Generic.height;
   temp_y -= 2;
   if (bg_collision_sub() & COL_LADDER || bg_collision_sub() & COL_LADDER_TOP)
-    return 1;
+    return temp5;
 
   return 0;
 }
 
 char bg_coll_ladder_top_under_player(void)
 {
-  temp5 = Generic.x + scroll_x + Generic.width;
+  temp5 = Generic.x + scroll_x + 7;
   temp_x = (char)temp5; // low byte
   temp_y = Generic.y + Generic.height;
   temp_y += 4;

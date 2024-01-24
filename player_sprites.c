@@ -1,3 +1,11 @@
+#define PLAYER_RUN_1_FRAMES 15
+#define PLAYER_RUN_2_FRAMES 30
+#define PLAYER_RUN_3_FRAMES 45
+#define PLAYER_RUN_4_FRAMES 60
+
+#define PLAYER_LADDER_1_FRAMES 15
+#define PLAYER_LADDER_2_FRAMES 30
+
 void draw_player_health_meter()
 {
   // draw health meter
@@ -177,11 +185,11 @@ void draw_player_sprites()
       return;
     }
 
-    if (player_on_ladder_pose < 30)
+    if (player_on_ladder_pose < PLAYER_LADDER_1_FRAMES)
     {
       oam_meta_spr(temp_x, temp_y, animate_playerclimb1_data);
     }
-    else if (player_on_ladder_pose < 60)
+    else if (player_on_ladder_pose < PLAYER_LADDER_2_FRAMES)
     {
       oam_meta_spr(temp_x, temp_y, animate_playerclimb2_data);
     }
@@ -193,10 +201,88 @@ void draw_player_sprites()
 
     return;
   }
-  else if (BoxGuy1.vel_x) // running
+  else if (player_is_running) // running
   {
 
-    if (sprite_frame_counter < 10)
+    if (sprite_frame_counter < PLAYER_RUN_1_FRAMES)
+    {
+      if (direction == LEFT)
+      {
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot2left_data;
+        }
+        else
+        {
+          tempint = animate_playerrun2left_data;
+        }
+      }
+      else
+      {
+
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot2right_data;
+        }
+        else
+        {
+          tempint = animate_playerrun2right_data;
+        }
+      }
+    }
+    else if (sprite_frame_counter < PLAYER_RUN_2_FRAMES)
+    {
+      if (direction == LEFT)
+      {
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot3left_data;
+        }
+        else
+        {
+          tempint = animate_playerrun3left_data;
+        }
+      }
+      else
+      {
+
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot3right_data;
+        }
+        else
+        {
+          tempint = animate_playerrun3right_data;
+        }
+      }
+    }
+    else if (sprite_frame_counter < PLAYER_RUN_3_FRAMES)
+    {
+      if (direction == LEFT)
+      {
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot2left_data;
+        }
+        else
+        {
+          tempint = animate_playerrun2left_data;
+        }
+      }
+      else
+      {
+
+        if (player_shooting)
+        {
+          tempint = animate_playerrunshoot2right_data;
+        }
+        else
+        {
+          tempint = animate_playerrun2right_data;
+        }
+      }
+    }
+    else if (sprite_frame_counter < PLAYER_RUN_4_FRAMES)
     {
       if (direction == LEFT)
       {
@@ -222,85 +308,6 @@ void draw_player_sprites()
         }
       }
     }
-    else if (sprite_frame_counter < 20)
-    {
-      if (direction == LEFT)
-      {
-        if (player_shooting)
-        {
-          tempint = animate_playerrunshoot2left_data;
-        }
-        else
-        {
-          tempint = animate_playerrun2left_data;
-        }
-      }
-      else
-      {
-
-        if (player_shooting)
-        {
-          tempint = animate_playerrunshoot2right_data;
-        }
-        else
-        {
-          tempint = animate_playerrun2right_data;
-        }
-      }
-    }
-    else if (sprite_frame_counter < 30)
-    {
-      sprite_frame_counter = 0;
-      if (direction == LEFT)
-      {
-        if (player_shooting)
-        {
-          tempint = animate_playerrunshoot3left_data;
-        }
-        else
-        {
-          tempint = animate_playerrun3left_data;
-        }
-      }
-      else
-      {
-
-        if (player_shooting)
-        {
-          tempint = animate_playerrunshoot3right_data;
-        }
-        else
-        {
-          tempint = animate_playerrun3right_data;
-        }
-      }
-    }
-    else if (sprite_frame_counter < 39)
-    {
-      if (direction == LEFT)
-      {
-        if (player_shooting)
-        {
-          tempint = animate_playerrunshoot2left_data;
-        }
-        else
-        {
-          tempint = animate_playerrun2left_data;
-        }
-      }
-      else
-      {
-
-        if (player_shooting)
-        {
-          tempint = animate_playerrunshoot2right_data;
-        }
-        else
-        {
-          tempint = animate_playerrun2right_data;
-        }
-      }
-    }
     else
     {
       sprite_frame_counter = 0;
@@ -308,11 +315,11 @@ void draw_player_sprites()
       {
         if (player_shooting)
         {
-          tempint = animate_playerrunshoot2left_data;
+          tempint = animate_playerrunshoot1left_data;
         }
         else
         {
-          tempint = animate_playerrun2left_data;
+          tempint = animate_playerrun1left_data;
         }
       }
       else
@@ -320,11 +327,11 @@ void draw_player_sprites()
 
         if (player_shooting)
         {
-          tempint = animate_playerrunshoot2right_data;
+          tempint = animate_playerrunshoot1right_data;
         }
         else
         {
-          tempint = animate_playerrun2right_data;
+          tempint = animate_playerrun1right_data;
         }
       }
     }

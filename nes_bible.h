@@ -1,5 +1,7 @@
 #define ACCEL 30
+#define LADDER_ACCEL 20
 #define DECEL 50
+#define HITSTUN_DECEL 65
 #define OFF 0xff
 
 #define COL_DOWN 0x80
@@ -10,8 +12,8 @@
 
 #define GRAVITY 0x3c
 #define MAX_SPEED 0x160
-#define MAX_LADDER_SPEED 0x120
-#define JUMP_VEL -0x600
+#define MAX_LADDER_SPEED 0x100
+#define JUMP_VEL -0x680
 #define MAX_RIGHT 0x9000
 #define MAX_LEFT 0x4000
 
@@ -34,6 +36,7 @@ unsigned char short_jump_count;
 unsigned char map_loaded;
 unsigned char collision;
 unsigned char player_in_air;
+unsigned char player_is_running;
 unsigned char player_on_ladder;
 unsigned char player_on_ladder_pose;
 unsigned char player_in_hitstun;
@@ -62,10 +65,13 @@ unsigned char eject_R;			 // remember these from the collision sub routine
 unsigned char eject_D;			 // from below
 unsigned char eject_U;			 // from up
 unsigned char direction = 1; // facing left or right?
+unsigned char direction_y = 1; // going up or down
 unsigned char sprite_frame_counter;
 unsigned char frame_counter;
 #define LEFT 0
 #define RIGHT 1
+#define DOWN 0
+#define UP 1
 
 int address;
 unsigned char x; // room loader code

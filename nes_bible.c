@@ -10,12 +10,11 @@
 TODO List:
 
 	[] fix the scrolling (1st screen glitch)
-	[] enemy collision with ground (not just walls)
-	[] enemies colide with each other
-	[] reeling animation / hitstun action for enemies
-	[] ladder climbing
+	[] fix enemy collision (with ground and other enemies)
+	[] fix bullet speeding up on scroll
 	[] full level
 	[] change death to be a certain collision, not just over screen edge?
+	[] change level up to be certain collision, not just oer the screen
 	[/] game modes
 */
 
@@ -93,8 +92,14 @@ void main(void)
 				room = 0;
 				scroll_x = 0;
 				++level;
-				// BoxGuy1.x = 0x4000;
-				BoxGuy1.y = 0x2400;
+				if (direction_y == DOWN)
+				{
+					BoxGuy1.y = 0x0400; // put the user near the top of screen
+				}
+				else
+				{											// 0xf000 is button of screen
+					BoxGuy1.y = 0xE000; // put the user above the bottom of the screen.
+				}
 				ppu_off();
 			}
 			else if (death)
@@ -159,7 +164,6 @@ void reset(void)
 	pal_bright(4); // back to normal brightness
 	scroll_x = 0;
 	scroll_y = 0;
-	room = 0;
 	map_loaded = 0;
 	player_in_air = 0;
 	player_on_ladder = 0;
@@ -170,6 +174,7 @@ void reset(void)
 	projectile_index = 0;
 	player_shooting = 0;
 	direction = 1;
+	direction_y = 0; // down default?
 	frame_counter = 0;
 	sprite_frame_counter = 0;
 	r_scroll_frames = 0;
@@ -181,7 +186,9 @@ void reset(void)
 	BoxGuy1.health = 28;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 0; // stay on same level
+	level = 0; // debug, change starting level
+	room = 0;	 // debug, hacky, change starting room
+	debug = 0;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -337,7 +344,7 @@ void load_room(void)
 
 	// init the max_room and max_scroll
 	max_rooms = level_max_rooms[level] - 1;
-	max_scroll = (max_rooms * 0x100) - 1;
+	max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
 
 	sprite_obj_init();
 }
@@ -387,31 +394,31 @@ void draw_sprites(void)
 	if (debug)
 	{
 		// SCROLL_X SPRITES
-		oam_spr(20, 010, 0x58, 1); // 0xfe = X
+		// oam_spr(20, 010, 0x58, 1); // 0xfe = X
 		temp1 = (scroll_x) >> 8;
-		oam_spr(28, 010, temp1 + 0x30, 1);
+		oam_spr(28, 10, temp1 + 0x30, 2);
 		temp1 = (scroll_x & 0xff) >> 4;
-		oam_spr(36, 010, temp1 + 0x30, 1);
+		oam_spr(36, 10, temp1 + 0x30, 2);
 		temp1 = (scroll_x & 0x0f);
-		oam_spr(44, 010, temp1 + 0x30, 1);
+		oam_spr(44, 10, temp1 + 0x30, 2);
 
 		// CURRENT ROOM # SPRITE
 		temp1 = room;
 		// temp1 = (scroll_x) >> 8;	 // high byte of scroll_x
-		oam_spr(58, 010, 0x52, 1); // 0xfd = R
-		oam_spr(66, 010, temp1 + 0x30, 1);
+		// oam_spr(58, 010, 0x52, 1); // 0xfd = R
+		oam_spr(90, 10, temp1 + 0x30, 1);
 
 		// PLAYER X LOCATION SPRITES
-		oam_spr(20, 20, 0x58, 2); // 0xfe = X
+		// oam_spr(66, 10, 0x58, 2); // 0xfe = X
 		temp1 = (BoxGuy1.x >> 8 & 0xff) >> 4;
-		oam_spr(28, 20, temp1 + 0x30, 2);
+		oam_spr(66, 10, temp1 + 0x30, 2);
 		temp1 = (BoxGuy1.x >> 8 & 0x0f);
-		oam_spr(36, 20, temp1 + 0x30, 2);
+		oam_spr(74, 10, temp1 + 0x30, 2);
 
-		// PLAYER Y LOCATION SPRITES
-		oam_spr(50, 20, 0xff, 2); // 0xff = Y
-		oam_spr(58, 20, temp_cmap1 + 0x30, 2);
-		oam_spr(80, 20, temp_cmap2 + 0x30, 2);
+		// // PLAYER Y LOCATION SPRITES
+		// oam_spr(50, 20, 0xff, 2); // 0xff = Y
+		// oam_spr(58, 20, temp_cmap1 + 0x30, 2);
+		// oam_spr(80, 20, temp_cmap2 + 0x30, 2);
 	}
 }
 
@@ -422,11 +429,11 @@ void movement(void)
 	{
 		if (direction == LEFT)
 		{
-			BoxGuy1.vel_x += DECEL;
+			BoxGuy1.vel_x += HITSTUN_DECEL;
 		}
 		else
 		{
-			BoxGuy1.vel_x -= DECEL;
+			BoxGuy1.vel_x -= HITSTUN_DECEL;
 		}
 	}
 
@@ -437,6 +444,7 @@ void movement(void)
 	if (pad1 & PAD_LEFT && !player_in_hitstun)
 	{
 		direction = LEFT;
+		player_is_running = 1;
 
 		if (!player_on_ladder)
 		{
@@ -460,6 +468,7 @@ void movement(void)
 	{
 
 		direction = RIGHT;
+		player_is_running = 1;
 
 		if (!player_on_ladder)
 		{
@@ -482,6 +491,7 @@ void movement(void)
 	}
 	else
 	{ // nothing pressed
+		player_is_running = 0;
 		if (BoxGuy1.vel_x >= ACCEL)
 			BoxGuy1.vel_x -= ACCEL;
 		else if (BoxGuy1.vel_x < -ACCEL)
@@ -559,10 +569,10 @@ void movement(void)
 
 	if (pad1 & PAD_DOWN)
 	{
-		temp5 = bg_coll_ladder_top_under_player();
-		if (temp5)
+		direction_y = DOWN;
+		if (bg_coll_ladder_top_under_player())
 		{
-			BoxGuy1.x = (BoxGuy1.x + 0xF00) & ~0xF00;
+			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00;
 			player_on_ladder = 1;
 			player_on_ladder_pose = 0;
 			player_in_air = 0;
@@ -576,8 +586,9 @@ void movement(void)
 	{
 		if (pad1 & PAD_DOWN)
 		{
+			direction_y = DOWN;
 			++player_on_ladder_pose;
-			BoxGuy1.vel_y += ACCEL;
+			BoxGuy1.vel_y += LADDER_ACCEL;
 			if (BoxGuy1.vel_y > MAX_LADDER_SPEED)
 			{
 				BoxGuy1.vel_y = MAX_LADDER_SPEED;
@@ -585,8 +596,9 @@ void movement(void)
 		}
 		else if (pad1 & PAD_UP)
 		{
+			direction_y = UP;
 			++player_on_ladder_pose;
-			BoxGuy1.vel_y -= ACCEL;
+			BoxGuy1.vel_y -= LADDER_ACCEL;
 			if (BoxGuy1.vel_y < -MAX_LADDER_SPEED)
 			{
 				BoxGuy1.vel_y = -MAX_LADDER_SPEED;
@@ -648,11 +660,11 @@ void movement(void)
 
 	if (pad1_new & PAD_UP)
 	{
+		direction_y = UP;
 		if (bg_coll_ladder())
 		{
 			// needs to snap player to grid, to nearest 16 pixels
-			// TODO: fix this so it snaps better.
-			BoxGuy1.x = (BoxGuy1.x + 0xF00) & ~0xF00;
+			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00;
 			player_on_ladder_pose = 0;
 			player_on_ladder = 1;
 			player_in_air = 0;
@@ -731,6 +743,27 @@ void movement(void)
 		map_loaded = 0;
 	}
 
+	// // scroll  //nes_doug's code
+	// temp5 = BoxGuy1.x;
+	// if (BoxGuy1.x > MAX_RIGHT)
+	// {
+	// 	temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
+	// 	if (temp1 > 3)
+	// 		temp1 = 3; // max scroll change
+	// 	scroll_x += temp1;
+	// 	high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) - temp1;
+	// }
+
+	// if (scroll_x >= MAX_SCROLL)
+	// {
+	// 	scroll_x = MAX_SCROLL; // stop scrolling right, end of level
+	// 	BoxGuy1.x = temp5;		 // but allow the x position to go all the way right
+	// 	if (high_byte(BoxGuy1.x) >= 0xf1)
+	// 	{
+	// 		BoxGuy1.x = 0xf100;
+	// 	}
+	// }
+
 	// scroll
 	temp5 = BoxGuy1.x; // store his x before we check the scrolling
 
@@ -739,69 +772,60 @@ void movement(void)
 
 		if (!map_loaded)
 		{
-			if (room >= 1)
-			{
-				room = ((scroll_x >> 8) - 1); // high byte = room, one to the left
-			}
+			room = ((scroll_x >> 8) - 1); // high byte = room, one to the left
+
 			new_cmap();
 			map_loaded = 1; // only do once
 		}
-
-		// temp5 is the NEXT x location.
-		// if (room == 0)
-		// {
-		// 	if (scroll_x > 0)
-		// 	{
-		// 		temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
-		// 		if (temp1 > 3)
-		// 			temp1 = 3; // max scroll change
-		// 		if (scroll_x < 3)
-		// 		{
-		// 			temp1 = scroll_x;
-		// 		}
-		// 		if (max_rooms > 1)
-		// 		{
-		// 			scroll_x -= temp1;																	 // scroll the window
-		// 			high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) + temp1; // add the offset to the guy
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		BoxGuy1.x = temp5;
-		// 	}
-		// }
 
 		// I think there's some overflow here. gotta make sure scroll_x doesn't go bonkers.
 		temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
 		if (temp1 > 3)
 			temp1 = 3; // max scroll change
-		if (max_rooms > 1 && room != 0)
+
+		if (max_rooms > 1 && room != 0) // this is for the multi-room levels
 		{
-			scroll_x -= temp1;																	 // scroll the window
-			high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) + temp1; // add the offset to the guy
+
+			if ((scroll_x - temp1) > max_scroll) // if subtracting the scroll makes it overflow
+			{
+				scroll_x = 0; // just go to zero (and move the guy)
+			}
+			else // otherwise scroll the window and offset the guy's movement
+			{
+				scroll_x -= temp1;																	 // scroll the window
+				high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) + temp1; // add the offset to the guy
+			}
 		}
 	}
+
+	// if (room > max_rooms) // we scrolled over subtracting
+	// {
+	// 	room = 0;
+	// 	BoxGuy1.x = temp5;								// but allow the x position to go all the way left
+	// 	if (high_byte(BoxGuy1.x) <= 0x01) // but limit how far right he can go
+	// 	{
+	// 		BoxGuy1.x = 0x0100;
+	// 	}
+	// }
 
 	if (BoxGuy1.x > MAX_RIGHT)
 	{
 		if (!map_loaded) // gets reset whenever the player's in the middle of the level
 		{
+			room = ((scroll_x >> 8) + 1); // high byte = room, one to the left
 
-			room = ((scroll_x >> 8) + 1); // high byte = room, one to the right
 			new_cmap();
 			map_loaded = 1; // only do once
 		}
-		// if (room <= level_max_rooms[level])
-		// {
 		temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
 		if (temp1 > 3)
 			temp1 = 3; // max scroll change
-		if (max_rooms > 1)
+
+		if (max_rooms > 1) // used for single room levels
 		{
 			scroll_x += temp1;																	 // scroll the window
 			high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) - temp1; // sub the offet from the guy
 		}
-		// }
 	}
 
 	if (scroll_x >= max_scroll)

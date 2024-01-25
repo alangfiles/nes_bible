@@ -26,7 +26,8 @@ enum
 {
     ENEMY_SNAIL,
     ENEMY_OWL,
-    ENEMY_SNAKE
+    ENEMY_SNAKE,
+    ENTITY_LEVEL_UP
 };
 
 // NOTE MAX_ENEMY = 10
@@ -58,3 +59,24 @@ const unsigned char *const Enemy_list[] = {
     level_1_enemies, level_2_enemies, level_3_enemies,
     level_4_enemies, level_5_enemies, level_6_enemies,
     level_7_enemies};
+
+const unsigned char level_1_entities[] = {
+    0x00, 11, 0x10, ENTITY_LEVEL_UP,
+    TURN_OFF};
+const unsigned char level_2_entities[] = {
+    TURN_OFF};
+const unsigned char level_3_entities[] = {
+    TURN_OFF};
+const unsigned char level_4_entities[] = {
+    TURN_OFF};
+const unsigned char level_5_entities[] = {
+    TURN_OFF};
+const unsigned char level_6_entities[] = {
+    TURN_OFF};
+const unsigned char level_7_entities[] = {
+    TURN_OFF};
+
+const unsigned char *const entity_list[] = {
+    level_1_entities, level_2_entities, level_3_entities,
+    level_4_entities, level_5_entities, level_6_entities,
+    level_7_entities};

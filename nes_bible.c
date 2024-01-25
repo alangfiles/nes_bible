@@ -8,7 +8,6 @@
 
 /*
 TODO List:
-	[] fix bullet speeding up on scroll
 	[] transition to levels (entity list)
 	[] sign posts / text in game?
 	[] fix enemy collision (with ground and other enemies)
@@ -89,7 +88,7 @@ void main(void)
 				pal_fade_to(4, 0); // fade to black
 				game_mode = MODE_SWITCH;
 				level_up = 0;
-				room = 0;
+				room_to_load = 0;
 				scroll_x = 0;
 				++level;
 				if (direction_y == DOWN)
@@ -186,8 +185,8 @@ void reset(void)
 	BoxGuy1.health = 28;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 0; // debug, change starting level
-	room = 0;	 // debug, hacky, change starting room
+	level = 0;				// debug, change starting level
+	room_to_load = 0; // debug, hacky, change starting room
 	debug = 1;
 
 	// clear all projectiles
@@ -292,7 +291,7 @@ void handle_scrolling(void)
 void load_room(void)
 {
 	offset = level_offsets[level];
-	offset += room;
+	offset += room_to_load;
 	set_data_pointer(stage1_levels_list[offset]);
 	set_mt_pointer(metatile);
 	for (y = 0;; y += 0x20)
@@ -389,10 +388,15 @@ void draw_sprites(void)
 		oam_spr(44, 10, temp1 + 0x30, 2);
 
 		// CURRENT ROOM # SPRITE
-		temp1 = room;
-		// temp1 = (scroll_x) >> 8;	 // high byte of scroll_x
+
+		tempint = scroll_x + high_byte(BoxGuy1.x);
+		temp1 = (tempint >> 8);
+
+		// temp1 = (scroll_x) >> 8; // high byte of scroll_x
 		// oam_spr(58, 010, 0x52, 1); // 0xfd = R
 		oam_spr(90, 10, temp1 + 0x30, 1);
+		temp1 = room_to_load;
+		oam_spr(100, 10, temp1 + 0x30, 3);
 
 		// PLAYER X LOCATION SPRITES
 		// oam_spr(66, 10, 0x58, 2); // 0xfe = X
@@ -758,20 +762,21 @@ void movement(void)
 
 		if (!map_loaded)
 		{
-			room = ((scroll_x >> 8) - 1); // high byte = room, one to the left
-
+			room_to_load = ((scroll_x >> 8) - 1); // high byte = room, one to the left
 			new_cmap();
 			map_loaded = 1; // only do once
 		}
 
-		// I think there's some overflow here. gotta make sure scroll_x doesn't go bonkers.
 		temp1 = (MAX_LEFT - BoxGuy1.x) >> 8;
 		if (temp1 > 3)
 			temp1 = 3; // max scroll change
 
-		if (max_rooms > 1 && room != 0) // this is for the multi-room levels
-		{
+		tempint = scroll_x + high_byte(BoxGuy1.x);
+		current_room = (tempint >> 8);
 
+		if (max_rooms > 1) // this is for the multi-room levels
+		{
+			//  && current_room != 0
 			if ((scroll_x - temp1) > max_scroll) // if subtracting the scroll makes it overflow
 			{
 				scroll_x = 0; // just go to zero (and move the guy)
@@ -798,7 +803,7 @@ void movement(void)
 	{
 		if (!map_loaded) // gets reset whenever the player's in the middle of the level
 		{
-			room = ((scroll_x >> 8) + 1); // high byte = room, one to the left
+			room_to_load = ((scroll_x >> 8) + 1); // high byte = room, one to the left
 
 			new_cmap();
 			map_loaded = 1; // only do once
@@ -955,18 +960,18 @@ void new_cmap(void)
 {
 
 	offset = level_offsets[level];
-	offset += room;
+	offset += room_to_load;
 
-	map = room & 1; // even or odd?
+	map = room_to_load & 1; // even or odd?
 	if (!map)
 	{
 		memcpy(c_map, stage1_levels_list[offset], 240);
-		temp_cmap1 = room;
+		temp_cmap1 = room_to_load;
 	}
 	else
 	{
 		memcpy(c_map2, stage1_levels_list[offset], 240);
-		temp_cmap2 = room;
+		temp_cmap2 = room_to_load;
 	}
 }
 
@@ -1003,6 +1008,10 @@ void check_spr_objects(void)
 		}
 	}
 }
+
+// void check_entity_objects(void){
+// TODO
+// }
 
 void enemy_moves(void)
 {

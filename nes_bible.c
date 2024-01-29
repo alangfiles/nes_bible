@@ -1038,18 +1038,6 @@ void enemy_moves(void)
 		--invul_frames;
 	}
 
-	// check for player collision:
-	if (invul_frames == 0 && enemy_x[index] == Generic2.x)
-	{
-		BoxGuy1.health -= 2;
-		player_in_hitstun = 30;
-		invul_frames = 60;
-		if (BoxGuy1.health == 0)
-		{
-			death = 1;
-		}
-	}
-
 	// check enemy collision with projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 	{
@@ -1174,67 +1162,91 @@ void sprite_obj_init(void)
 
 void sprite_collisions(void)
 {
-	return;
+
+	Generic.x = high_byte(BoxGuy1.x);
+	Generic.y = high_byte(BoxGuy1.y);
+	Generic.width = HERO_WIDTH;
+	Generic.height = HERO_HEIGHT;
+
+	for (index = 0; index < MAX_ENTITY; ++index)
+	{
+		if (entity_active[index])
+		{
+			switch (entity_type[index])
+			{
+			case ENTITY_PIT:
+				Generic2.width = 400;
+				Generic2.height = 10;
+				break;
+			case ENTITY_LEVEL_UP:
+				Generic2.width = 16;
+				Generic2.height = 16;
+				break;
+			case ENTITY_LEVEL_DOWN:
+				Generic2.width = 16;
+				Generic2.height = 16;
+				break;
+			default:
+				Generic2.width = 1;
+				Generic2.height = 1;
+				break;
+			}
+
+			Generic2.x = entity_x[index];
+			Generic2.y = entity_y[index];
+			if (check_collision(&Generic, &Generic2))
+			{
+				switch (entity_type[index])
+				{
+				case ENTITY_PIT:
+					death = 1;
+					break;
+				case ENTITY_LEVEL_UP:
+					++level_up;
+					break;
+				case ENTITY_LEVEL_DOWN:
+					--level_up;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+
+	Generic2.width = ENEMY_WIDTH;
+	Generic2.height = ENEMY_HEIGHT;
+
+	for (index = 0; index < MAX_ENEMY; ++index)
+	{
+		if (enemy_active[index])
+		{
+			Generic2.x = enemy_x[index];
+			Generic2.y = enemy_y[index];
+			if (check_collision(&Generic, &Generic2))
+			{
+
+				switch (enemy_type[index])
+				{
+				case ENEMY_SNAIL:
+
+					// check for player collision:
+					if (invul_frames == 0)
+					{
+						enemy_health[index] -= 1; // hit the enemy running into it?
+						BoxGuy1.health -= 2;
+						player_in_hitstun = 30;
+						invul_frames = 60;
+						if (BoxGuy1.health == 0)
+						{
+							death = 1;
+						}
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
 }
-
-// 	// Generic.x = high_byte(BoxGuy1.x);
-// 	// Generic.y = high_byte(BoxGuy1.y);
-// 	// Generic.width = HERO_WIDTH;
-// 	// Generic.height = HERO_HEIGHT;
-
-// 	// for (index = 0; index < MAX_COINS; ++index)
-// 	// {
-// 	// 	if (coin_active[index])
-// 	// 	{
-// 	// 		if (coin_type[index] == COIN_REG)
-// 	// 		{
-// 	// 			Generic2.width = COIN_WIDTH;
-// 	// 			Generic2.height = COIN_HEIGHT;
-// 	// 		}
-// 	// 		else
-// 	// 		{
-// 	// 			Generic2.width = BIG_COIN;
-// 	// 			Generic2.height = BIG_COIN;
-// 	// 		}
-// 	// 		Generic2.x = coin_x[index];
-// 	// 		Generic2.y = coin_y[index];
-// 	// 		if (check_collision(&Generic, &Generic2))
-// 	// 		{
-// 	// 			coin_y[index] = TURN_OFF;
-// 	// 			sfx_play(SFX_DING, 0);
-// 	// 			++coins;
-
-// 	// 			if (coin_type[index] == COIN_END)
-// 	// 				++level_up;
-// 	// 		}
-// 	// 	}
-// 	// }
-
-// 	Generic2.width = ENEMY_WIDTH;
-// 	Generic2.height = ENEMY_HEIGHT;
-
-// 	for (index = 0; index < MAX_ENEMY; ++index)
-// 	{
-// 		if (enemy_active[index])
-// 		{
-// 			Generic2.x = enemy_x[index];
-// 			Generic2.y = enemy_y[index];
-// 			if (check_collision(&Generic, &Generic2))
-// 			{
-// 				enemy_y[index] = TURN_OFF;
-// 				enemy_active[index] = 0;
-// 				sfx_play(SFX_NOISE, 0);
-// 				if (coins)
-// 				{
-// 					coins -= 5;
-// 					if (coins > 0x80)
-// 						coins = 0;
-// 				}
-// 				else
-// 				{ // die
-// 					++death;
-// 				}
-// 			}
-// 		}
-// 	}
-// }

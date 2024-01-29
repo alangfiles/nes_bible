@@ -13,7 +13,7 @@
 #define GRAVITY 0x3c
 #define MAX_SPEED 0x160
 #define MAX_LADDER_SPEED 0x100
-#define JUMP_VEL -0x680
+#define JUMP_VEL -0x480
 #define MAX_RIGHT 0x9000
 #define MAX_LEFT 0x4000
 
@@ -50,6 +50,7 @@ unsigned char temp1;
 unsigned char temp2;
 unsigned char temp3;
 unsigned char temp4;
+unsigned char multi_jump;
 unsigned int temp5;
 unsigned int temp6;
 unsigned int tempint;
@@ -185,6 +186,17 @@ unsigned char enemy_type[MAX_ENEMY];
 const unsigned char * enemy_anim[MAX_ENEMY];
 unsigned char enemy_frames;
 
+
+#define MAX_ENTITY 16
+unsigned char entity_x[MAX_ENTITY];
+unsigned char entity_y[MAX_ENTITY];
+unsigned char entity_active[MAX_ENTITY];
+unsigned char entity_room[MAX_ENTITY];
+unsigned char entity_actual_x[MAX_ENTITY];
+unsigned char entity_type[MAX_ENTITY];
+const unsigned char * entity_anim[MAX_ENTITY];
+unsigned char entity_frames;
+
 #define ENEMY_WIDTH 13
 #define ENEMY_HEIGHT 13
 
@@ -208,9 +220,13 @@ void new_cmap(void);
 void handle_scrolling(void);
 void projectile_movement(void);
 void check_spr_objects(void);
+void check_entity_objects(void);
+void sprite_collisions(void);
+
 void enemy_moves(void);
 void reset(void);
 void sprite_obj_init(void);
+void entity_obj_init(void);
 
 char bg_coll_L(void);
 char bg_coll_R(void);

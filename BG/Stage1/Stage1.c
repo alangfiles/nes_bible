@@ -66,6 +66,7 @@ const unsigned char level_1_entities[] = {
 const unsigned char level_2_entities[] = {
     TURN_OFF};
 const unsigned char level_3_entities[] = {
+    0xB0, 3, 0xE0, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_4_entities[] = {
     TURN_OFF};

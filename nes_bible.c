@@ -76,6 +76,8 @@ void main(void)
 			check_spr_objects();
 			projectile_movement();
 
+			sprite_collisions();
+
 			set_scroll_x(scroll_x);
 			set_scroll_y(scroll_y);
 
@@ -168,6 +170,7 @@ void reset(void)
 	player_on_ladder = 0;
 	player_running = 0;
 	short_jump_count = 0;
+	multi_jump = 0;
 	projectile_cooldown = 0;
 	projectile_count = 0;
 	projectile_index = 0;
@@ -332,6 +335,7 @@ void load_room(void)
 	max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
 
 	sprite_obj_init();
+	entity_obj_init();
 }
 
 void draw_sprites(void)
@@ -562,7 +566,7 @@ void movement(void)
 		direction_y = DOWN;
 		if (bg_coll_ladder_top_under_player())
 		{
-			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00;
+			BoxGuy1.x = (BoxGuy1.x + 0x100) & ~0xF00;
 			player_on_ladder = 1;
 			player_on_ladder_pose = 0;
 			player_in_air = 0;
@@ -622,6 +626,7 @@ void movement(void)
 		if (bg_coll_D()) // if he's collising below
 		{								 // check collision below
 			player_in_air = 0;
+			multi_jump = 0;
 			player_on_ladder = 0;
 			high_byte(BoxGuy1.y) = high_byte(BoxGuy1.y) - eject_D;
 			BoxGuy1.y &= 0xff00;
@@ -670,8 +675,9 @@ void movement(void)
 			player_on_ladder = 0;
 			player_in_air = 1;
 		}
-		else if (bg_coll_D2())
+		else if (bg_coll_D2() || multi_jump < 2)
 		{
+			++multi_jump;
 			BoxGuy1.vel_y = JUMP_VEL; // JUMP
 			// sfx_play(SFX_JUMP, 0);
 			short_jump_count = 1;
@@ -726,6 +732,7 @@ void movement(void)
 		short_jump_count = 0;
 	}
 
+	// scroll
 	// when the player is in the middle of the screen, reset the map loaded
 	temp5 = low_byte(scroll_x) + high_byte(BoxGuy1.x);
 	if (temp5 > 0x98 && temp5 < 0xa4) // middle of the screen
@@ -733,28 +740,6 @@ void movement(void)
 		map_loaded = 0;
 	}
 
-	// // scroll  //nes_doug's code
-	// temp5 = BoxGuy1.x;
-	// if (BoxGuy1.x > MAX_RIGHT)
-	// {
-	// 	temp1 = (BoxGuy1.x - MAX_RIGHT) >> 8;
-	// 	if (temp1 > 3)
-	// 		temp1 = 3; // max scroll change
-	// 	scroll_x += temp1;
-	// 	high_byte(BoxGuy1.x) = high_byte(BoxGuy1.x) - temp1;
-	// }
-
-	// if (scroll_x >= MAX_SCROLL)
-	// {
-	// 	scroll_x = MAX_SCROLL; // stop scrolling right, end of level
-	// 	BoxGuy1.x = temp5;		 // but allow the x position to go all the way right
-	// 	if (high_byte(BoxGuy1.x) >= 0xf1)
-	// 	{
-	// 		BoxGuy1.x = 0xf100;
-	// 	}
-	// }
-
-	// scroll
 	temp5 = BoxGuy1.x; // store his x before we check the scrolling
 
 	if (BoxGuy1.x < MAX_LEFT)
@@ -776,7 +761,6 @@ void movement(void)
 
 		if (max_rooms > 1) // this is for the multi-room levels
 		{
-			//  && current_room != 0
 			if ((scroll_x - temp1) > max_scroll) // if subtracting the scroll makes it overflow
 			{
 				scroll_x = 0; // just go to zero (and move the guy)
@@ -788,16 +772,6 @@ void movement(void)
 			}
 		}
 	}
-
-	// if (room > max_rooms) // we scrolled over subtracting
-	// {
-	// 	room = 0;
-	// 	BoxGuy1.x = temp5;								// but allow the x position to go all the way left
-	// 	if (high_byte(BoxGuy1.x) <= 0x01) // but limit how far right he can go
-	// 	{
-	// 		BoxGuy1.x = 0x0100;
-	// 	}
-	// }
 
 	if (BoxGuy1.x > MAX_RIGHT)
 	{
@@ -899,7 +873,6 @@ void draw_screen_R(void)
 	// scrolling to the right, draw metatiles as we go
 	pseudo_scroll_x = scroll_x + 0x120;
 
-	// TODO might need to put in offset here?
 	temp1 = pseudo_scroll_x >> 8;
 
 	offset = level_offsets[level];
@@ -1009,9 +982,50 @@ void check_spr_objects(void)
 	}
 }
 
-// void check_entity_objects(void){
-// TODO
-// }
+void entity_obj_init(void)
+{
+	pointer = entity_list[level];
+	for (index = 0, index2 = 0; index < MAX_ENTITY; ++index)
+	{
+
+		entity_x[index] = 0;
+
+		temp1 = pointer[index2]; // get a byte of data
+		entity_y[index] = temp1;
+
+		if (temp1 == TURN_OFF)
+			break;
+
+		++index2;
+
+		entity_active[index] = 0;
+
+		temp1 = pointer[index2]; // get a byte of data
+		entity_room[index] = temp1;
+
+		++index2;
+
+		temp1 = pointer[index2]; // get a byte of data
+		entity_actual_x[index] = temp1;
+
+		++index2;
+
+		temp1 = pointer[index2]; // get a byte of data
+		entity_type[index] = temp1;
+
+		++index2;
+	}
+
+	for (++index; index < MAX_ENTITY; ++index)
+	{
+		entity_y[index] = TURN_OFF;
+	}
+}
+
+void check_entity_objects(void)
+{
+	// 0xB0, 3, 0xE0, ENTITY_LEVEL_UP,
+}
 
 void enemy_moves(void)
 {
@@ -1152,3 +1166,70 @@ void sprite_obj_init(void)
 		enemy_y[index] = TURN_OFF;
 	}
 }
+
+void sprite_collisions(void)
+{
+	return;
+}
+
+// 	// Generic.x = high_byte(BoxGuy1.x);
+// 	// Generic.y = high_byte(BoxGuy1.y);
+// 	// Generic.width = HERO_WIDTH;
+// 	// Generic.height = HERO_HEIGHT;
+
+// 	// for (index = 0; index < MAX_COINS; ++index)
+// 	// {
+// 	// 	if (coin_active[index])
+// 	// 	{
+// 	// 		if (coin_type[index] == COIN_REG)
+// 	// 		{
+// 	// 			Generic2.width = COIN_WIDTH;
+// 	// 			Generic2.height = COIN_HEIGHT;
+// 	// 		}
+// 	// 		else
+// 	// 		{
+// 	// 			Generic2.width = BIG_COIN;
+// 	// 			Generic2.height = BIG_COIN;
+// 	// 		}
+// 	// 		Generic2.x = coin_x[index];
+// 	// 		Generic2.y = coin_y[index];
+// 	// 		if (check_collision(&Generic, &Generic2))
+// 	// 		{
+// 	// 			coin_y[index] = TURN_OFF;
+// 	// 			sfx_play(SFX_DING, 0);
+// 	// 			++coins;
+
+// 	// 			if (coin_type[index] == COIN_END)
+// 	// 				++level_up;
+// 	// 		}
+// 	// 	}
+// 	// }
+
+// 	Generic2.width = ENEMY_WIDTH;
+// 	Generic2.height = ENEMY_HEIGHT;
+
+// 	for (index = 0; index < MAX_ENEMY; ++index)
+// 	{
+// 		if (enemy_active[index])
+// 		{
+// 			Generic2.x = enemy_x[index];
+// 			Generic2.y = enemy_y[index];
+// 			if (check_collision(&Generic, &Generic2))
+// 			{
+// 				enemy_y[index] = TURN_OFF;
+// 				enemy_active[index] = 0;
+// 				sfx_play(SFX_NOISE, 0);
+// 				if (coins)
+// 				{
+// 					coins -= 5;
+// 					if (coins > 0x80)
+// 						coins = 0;
+// 				}
+// 				else
+// 				{ // die
+// 					++death;
+// 				}
+// 			}
+// 		}
+// 	}
+// }

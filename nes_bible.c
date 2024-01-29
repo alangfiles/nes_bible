@@ -190,7 +190,7 @@ void reset(void)
 	game_mode = MODE_GAME;
 	level = 0;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
-	debug = 1;
+	debug = 0;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -424,10 +424,14 @@ void movement(void)
 		if (direction == LEFT)
 		{
 			BoxGuy1.vel_x += HITSTUN_DECEL;
+			if (BoxGuy1.vel_x >= MAX_SPEED)
+				BoxGuy1.vel_x = MAX_SPEED;
 		}
 		else
 		{
 			BoxGuy1.vel_x -= HITSTUN_DECEL;
+			if (BoxGuy1.vel_x < -MAX_SPEED)
+				BoxGuy1.vel_x = -MAX_SPEED;
 		}
 	}
 
@@ -1033,12 +1037,13 @@ void enemy_moves(void)
 	{
 		--invul_frames;
 	}
-	// if enemy and player are touching, reduce health
-	if (enemy_x[index] == Generic2.x && invul_frames == 0)
+
+	// check for player collision:
+	if (invul_frames == 0 && enemy_x[index] == Generic2.x)
 	{
-		--BoxGuy1.health;
-		player_in_hitstun = 15;
-		invul_frames = 30;
+		BoxGuy1.health -= 2;
+		player_in_hitstun = 30;
+		invul_frames = 60;
 		if (BoxGuy1.health == 0)
 		{
 			death = 1;

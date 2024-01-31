@@ -100,8 +100,7 @@ void main(void)
 				if (change_level)
 				{
 					pal_fade_to(4, 0); // fade to black
-					ppu_off();
-					ppu_wait_nmi();
+					game_mode = MODE_SWITCH;
 					change_level = 0;
 					room_to_load = 0;
 					scroll_x = 0;
@@ -127,9 +126,7 @@ void main(void)
 					{											// 0xf000 is button of screen
 						BoxGuy1.y = 0xE000; // put the user above the bottom of the screen.
 					}
-
-					ppu_on_all();
-					pal_fade_to(0, 4);
+					ppu_off();
 				}
 				else
 				{
@@ -144,15 +141,11 @@ void main(void)
 			pad1 = pad_poll(0); // read the first controller
 			pad1_new = get_pad_new(0);
 
-			// draw some text on blank screen
-			oam_clear();
-
-			multi_vram_buffer_horz("You died, press start.", 22, NTADR_A(5, 14));
-
-			set_scroll_x(0);
+			// draw_sprites();
 
 			if (pad1_new & PAD_START)
 			{
+
 				reset();
 				game_mode = MODE_GAME;
 			}
@@ -174,6 +167,34 @@ void main(void)
 				// music_play(song);
 				// color_emphasis(COL_EMP_NORMAL);
 				ppu_mask(0b00011000); // grayscale mode
+			}
+		}
+		while (game_mode == MODE_SWITCH)
+		{
+			ppu_wait_nmi();
+			++bright_count;
+			if (bright_count >= 0x10)
+			{ // fade out
+				bright_count = 0;
+				--bright;
+				if (bright != 0xff)
+					pal_bright(bright); // fade out
+			}
+			set_scroll_x(scroll_x);
+
+			if (bright == 0xff)
+			{ // now switch rooms
+				ppu_off();
+				oam_clear();
+				scroll_x = 0;
+				set_scroll_x(scroll_x);
+				if (level < 9)
+				{
+					load_room();
+					game_mode = MODE_GAME;
+					ppu_on_all();
+					pal_bright(4); // back to normal brighness
+				}
 			}
 		}
 	}

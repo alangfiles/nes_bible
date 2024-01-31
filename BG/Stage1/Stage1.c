@@ -27,6 +27,10 @@ enum
     ENEMY_SNAIL,
     ENEMY_OWL,
     ENEMY_SNAKE,
+};
+
+enum
+{
     ENTITY_LEVEL_UP,
     ENTITY_PIT,
     ENTITY_LEVEL_DOWN
@@ -63,11 +67,14 @@ const unsigned char *const Enemy_list[] = {
     level_7_enemies};
 
 const unsigned char level_1_entities[] = {
-    0x00, 11, 0x10, ENTITY_LEVEL_UP,
+    0x00, 10, 0xA0, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_2_entities[] = {
+    0xE0, 0, 0x00, ENTITY_LEVEL_DOWN,
+    0x00, 0, 0x80, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_3_entities[] = {
+    0xF0, 0, 0x10, ENTITY_LEVEL_DOWN,
     0xB0, 3, 0xE0, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_4_entities[] = {

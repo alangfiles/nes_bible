@@ -25,8 +25,7 @@
 #define B3 0
 #define OAM_PRIO 0
 
-
-#pragma bss-name(push, "ZEROPAGE")
+#pragma bss - name(push, "ZEROPAGE")
 
 // GLOBAL VARIABLES
 unsigned char debug;
@@ -60,12 +59,14 @@ unsigned char temp_cmap1;
 unsigned char temp_cmap2;
 unsigned char level;
 unsigned char offset;
+unsigned char change_level;
 unsigned char level_up;
-unsigned char eject_L;			 // from the left
-unsigned char eject_R;			 // remember these from the collision sub routine
-unsigned char eject_D;			 // from below
-unsigned char eject_U;			 // from up
-unsigned char direction = 1; // facing left or right?
+unsigned char level_down;
+unsigned char eject_L;				 // from the left
+unsigned char eject_R;				 // remember these from the collision sub routine
+unsigned char eject_D;				 // from below
+unsigned char eject_U;				 // from up
+unsigned char direction = 1;	 // facing left or right?
 unsigned char direction_y = 1; // going up or down
 unsigned char sprite_frame_counter;
 unsigned char frame_counter;
@@ -90,14 +91,32 @@ unsigned int pseudo_scroll_x;
 
 unsigned char song;
 #define MAX_SONGS 2
-enum {SONG_GAME, SONG_PAUSE};
-enum {SFX_JUMP, SFX_DING, SFX_NOISE};
+enum
+{
+	SONG_GAME,
+	SONG_PAUSE
+};
+enum
+{
+	SFX_JUMP,
+	SFX_DING,
+	SFX_NOISE
+};
 
 unsigned char game_mode;
-enum {MODE_TITLE, MODE_GAME, MODE_PAUSE, MODE_SWITCH, MODE_END, 
-MODE_GAME_OVER, MODE_RESET};
+enum
+{
+	MODE_TITLE,
+	MODE_GAME,
+	MODE_PAUSE,
+	MODE_DEATH,
+	MODE_SWITCH,
+	MODE_END,
+	MODE_GAME_OVER,
+	MODE_RESET
+};
 
-const unsigned char * pointer;
+const unsigned char *pointer;
 unsigned char l_scroll_frames;
 unsigned char r_scroll_frames;
 unsigned int old_x;
@@ -109,6 +128,7 @@ unsigned char temp_y;
 unsigned char temp_room;
 unsigned char player_shooting;
 unsigned char death;
+unsigned char death_flag;
 unsigned char invul_frames;
 unsigned char projectile_cooldown;
 unsigned char projectile_count;
@@ -118,16 +138,15 @@ unsigned char projectiles_x[] = {0, 0, 0, 0};
 unsigned char projectiles_y[] = {0, 0, 0, 0};
 
 unsigned char sine_wave[] = {5, 8, 10, 10, 8, 5, 2, 0, 0, 2};
-//for shuffling 16 enemies
-const unsigned char shuffle_array[]={
-0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,
-0,2,4,6,8,10,12,14,1,3,5,7,9,11,13,15,
-15,13,11,9,7,5,3,1,14,12,10,8,6,4,2,0	
-};
+// for shuffling 16 enemies
+const unsigned char shuffle_array[] = {
+		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+		15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+		0, 2, 4, 6, 8, 10, 12, 14, 1, 3, 5, 7, 9, 11, 13, 15,
+		15, 13, 11, 9, 7, 5, 3, 1, 14, 12, 10, 8, 6, 4, 2, 0};
 unsigned char offset;
 
-#pragma bss-name(push, "BSS")
+#pragma bss - name(push, "BSS")
 
 unsigned char c_map[240];
 unsigned char c_map2[240]; // not used in this example
@@ -169,11 +188,10 @@ unsigned int max_scroll;
 // doubles as the collision map data
 
 const unsigned char palette_sp[] = {
-		0x21,0x17,0x24,0x36,
-		0x21,0x06,0x28,0x37,
-		0x21,0x0f,0x11,0x30,
-		0x21,0x17,0x3d,0x38};
-
+		0x21, 0x17, 0x24, 0x36,
+		0x21, 0x06, 0x28, 0x37,
+		0x21, 0x0f, 0x11, 0x30,
+		0x21, 0x17, 0x3d, 0x38};
 
 #define MAX_ENEMY 16
 unsigned char enemy_x[MAX_ENEMY];
@@ -183,9 +201,8 @@ unsigned char enemy_health[MAX_ENEMY];
 unsigned char enemy_room[MAX_ENEMY];
 unsigned char enemy_actual_x[MAX_ENEMY];
 unsigned char enemy_type[MAX_ENEMY];
-const unsigned char * enemy_anim[MAX_ENEMY];
+const unsigned char *enemy_anim[MAX_ENEMY];
 unsigned char enemy_frames;
-
 
 #define MAX_ENTITY 16
 unsigned char entity_x[MAX_ENTITY];
@@ -194,7 +211,7 @@ unsigned char entity_active[MAX_ENTITY];
 unsigned char entity_room[MAX_ENTITY];
 unsigned char entity_actual_x[MAX_ENTITY];
 unsigned char entity_type[MAX_ENTITY];
-const unsigned char * entity_anim[MAX_ENTITY];
+const unsigned char *entity_anim[MAX_ENTITY];
 unsigned char entity_frames;
 
 #define ENEMY_WIDTH 13
@@ -222,6 +239,7 @@ void projectile_movement(void);
 void check_spr_objects(void);
 void check_entity_objects(void);
 void sprite_collisions(void);
+void entity_collisions(void);
 
 void enemy_moves(void);
 void reset(void);

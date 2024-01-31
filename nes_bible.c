@@ -74,9 +74,11 @@ void main(void)
 
 			movement();
 			check_spr_objects();
+			check_entity_objects();
 			projectile_movement();
 
 			sprite_collisions();
+			entity_collisions();
 
 			set_scroll_x(scroll_x);
 			set_scroll_y(scroll_y);
@@ -85,30 +87,77 @@ void main(void)
 
 			draw_sprites();
 
-			if (level_up)
+			if (death)
 			{
 				pal_fade_to(4, 0); // fade to black
-				game_mode = MODE_SWITCH;
-				level_up = 0;
-				room_to_load = 0;
-				scroll_x = 0;
-				++level;
-				if (direction_y == DOWN)
+				game_mode = MODE_DEATH;
+			}
+
+			// check screen flip
+
+			if (high_byte(BoxGuy1.y) > 0xf0)
+			{ // player is offscreen
+				if (change_level)
 				{
-					BoxGuy1.y = 0x0400; // put the user near the top of screen
+					pal_fade_to(4, 0); // fade to black
+					ppu_off();
+					ppu_wait_nmi();
+					change_level = 0;
+					room_to_load = 0;
+					scroll_x = 0;
+
+					if (level_up)
+					{
+						++level;
+						level_up = 0;
+					}
+					if (level_down)
+					{
+						--level;
+						level_down = 0;
+						room_to_load = level_max_rooms[level] - 1;
+						// set max scroll and all that jazz.
+					}
+
+					if (direction_y == DOWN)
+					{
+						BoxGuy1.y = 0x0400; // put the user near the top of screen
+					}
+					else
+					{											// 0xf000 is button of screen
+						BoxGuy1.y = 0xE000; // put the user above the bottom of the screen.
+					}
+
+					ppu_on_all();
+					pal_fade_to(0, 4);
 				}
 				else
-				{											// 0xf000 is button of screen
-					BoxGuy1.y = 0xE000; // put the user above the bottom of the screen.
+				{
+					++death; // if we're not changing levels, they're dying
 				}
-				ppu_off();
-			}
-			else if (death)
-			{
-				pal_fade_to(4, 0); // fade to black
-				reset();
 			}
 		}
+		while (game_mode == MODE_DEATH)
+		{
+			ppu_wait_nmi();
+
+			pad1 = pad_poll(0); // read the first controller
+			pad1_new = get_pad_new(0);
+
+			// draw some text on blank screen
+			oam_clear();
+
+			multi_vram_buffer_horz("You died, press start.", 22, NTADR_A(5, 14));
+
+			set_scroll_x(0);
+
+			if (pad1_new & PAD_START)
+			{
+				reset();
+				game_mode = MODE_GAME;
+			}
+		}
+
 		while (game_mode == MODE_PAUSE)
 		{
 			ppu_wait_nmi();
@@ -125,34 +174,6 @@ void main(void)
 				// music_play(song);
 				// color_emphasis(COL_EMP_NORMAL);
 				ppu_mask(0b00011000); // grayscale mode
-			}
-		}
-		while (game_mode == MODE_SWITCH)
-		{
-			ppu_wait_nmi();
-			++bright_count;
-			if (bright_count >= 0x10)
-			{ // fade out
-				bright_count = 0;
-				--bright;
-				if (bright != 0xff)
-					pal_bright(bright); // fade out
-			}
-			set_scroll_x(scroll_x);
-
-			if (bright == 0xff)
-			{ // now switch rooms
-				ppu_off();
-				oam_clear();
-				scroll_x = 0;
-				set_scroll_x(scroll_x);
-				if (level < 9)
-				{
-					load_room();
-					game_mode = MODE_GAME;
-					ppu_on_all();
-					pal_bright(4); // back to normal brighness
-				}
 			}
 		}
 	}
@@ -380,6 +401,40 @@ void draw_sprites(void)
 		}
 	}
 
+	offset = get_frame_count() & 3;
+	offset = offset << 4; // * 16, the size of the shuffle array
+
+	for (index = 0; index < MAX_ENTITY; ++index)
+	{
+		index2 = shuffle_array[offset];
+		++offset;
+		temp_y = entity_y[index2];
+		if (temp_y == TURN_OFF)
+			continue;
+		if (!entity_active[index2])
+			continue;
+		temp_x = entity_x[index2];
+		if (temp_x == 0)
+			temp_x = 1; // problems with x = 0
+		if (temp_x > 0xf0)
+			continue;
+		if (temp_y < 0xf0)
+		{
+			if (entity_type[index2] == ENTITY_PIT)
+			{
+				oam_meta_spr(temp_x, temp_y, animate_bread_data);
+			}
+			else if (entity_type[index2] == 0)
+			{
+				oam_meta_spr(temp_x, temp_y, animate_bun_data);
+			}
+			else
+			{
+				oam_meta_spr(temp_x, temp_y, animate_fruit_data);
+			}
+		}
+	}
+
 	if (debug)
 	{
 		// SCROLL_X SPRITES
@@ -520,15 +575,6 @@ void movement(void)
 	Generic.y = high_byte(BoxGuy1.y);
 	Generic.width = HERO_WIDTH;
 	Generic.height = HERO_HEIGHT;
-
-	if (BoxGuy1.y > 0xf800) // top of screen
-	{
-		level_up = 1;
-	}
-	else if (BoxGuy1.y > 0xf400) // bottom of screen
-	{
-		death = 1;
-	}
 
 	if (BoxGuy1.vel_x < 0)
 	{
@@ -963,6 +1009,27 @@ char get_position(void)
 	return 1;
 }
 
+void check_entity_objects(void)
+{
+
+	Generic2.x = high_byte(BoxGuy1.x);
+	// mark each object "active" if they are, and get the screen x
+
+	for (index = 0; index < MAX_ENTITY; ++index)
+	{
+		entity_active[index] = 0; // default to zero
+		if (entity_y[index] != TURN_OFF)
+		{
+			high_byte(temp5) = entity_room[index];
+			low_byte(temp5) = entity_actual_x[index];
+			temp1 = entity_active[index] = get_position();
+			if (temp1 == 0)
+				continue;
+			entity_x[index] = temp_x; // screen x coords
+		}
+	}
+}
+
 void check_spr_objects(void)
 {
 	++enemy_frames;
@@ -989,6 +1056,12 @@ void check_spr_objects(void)
 void entity_obj_init(void)
 {
 	pointer = entity_list[level];
+
+	for (index = 0; index < MAX_ENTITY; ++index)
+	{
+		entity_y[index] = TURN_OFF; // turn off all objects
+	}
+
 	for (index = 0, index2 = 0; index < MAX_ENTITY; ++index)
 	{
 
@@ -1019,16 +1092,6 @@ void entity_obj_init(void)
 
 		++index2;
 	}
-
-	for (++index; index < MAX_ENTITY; ++index)
-	{
-		entity_y[index] = TURN_OFF;
-	}
-}
-
-void check_entity_objects(void)
-{
-	// 0xB0, 3, 0xE0, ENTITY_LEVEL_UP,
 }
 
 void enemy_moves(void)
@@ -1160,7 +1223,7 @@ void sprite_obj_init(void)
 	}
 }
 
-void sprite_collisions(void)
+void entity_collisions(void)
 {
 
 	Generic.x = high_byte(BoxGuy1.x);
@@ -1183,12 +1246,12 @@ void sprite_collisions(void)
 				Generic2.height = 16;
 				break;
 			case ENTITY_LEVEL_DOWN:
-				Generic2.width = 16;
+				Generic2.width = 400;
 				Generic2.height = 16;
 				break;
 			default:
-				Generic2.width = 1;
-				Generic2.height = 1;
+				Generic2.width = 16;
+				Generic2.height = 16;
 				break;
 			}
 
@@ -1199,13 +1262,15 @@ void sprite_collisions(void)
 				switch (entity_type[index])
 				{
 				case ENTITY_PIT:
-					death = 1;
+					++death_flag;
 					break;
 				case ENTITY_LEVEL_UP:
+					++change_level;
 					++level_up;
 					break;
 				case ENTITY_LEVEL_DOWN:
-					--level_up;
+					++change_level;
+					++level_down;
 					break;
 				default:
 					break;
@@ -1213,6 +1278,12 @@ void sprite_collisions(void)
 			}
 		}
 	}
+}
+
+void sprite_collisions(void)
+{
+	Generic.x = high_byte(BoxGuy1.x);
+	Generic.y = high_byte(BoxGuy1.y);
 
 	Generic2.width = ENEMY_WIDTH;
 	Generic2.height = ENEMY_HEIGHT;

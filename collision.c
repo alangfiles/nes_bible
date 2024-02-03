@@ -9,6 +9,7 @@ void bg_collision_fast(void)
 
   collision_L = 0;
   collision_R = 0;
+  collision_D = 0;
 
   if (Generic.y >= 0xf0)
     return;
@@ -37,6 +38,16 @@ void bg_collision_fast(void)
   if (bg_collision_sub() & COL_ALL)
   { // find a corner in the collision map
     ++collision_R;
+  }
+
+  // underneath
+  temp5 -= (Generic.width >> 1); // middle of character
+  temp_x = (char)temp5;          // low byte
+  temp_y += 6;
+
+  if (bg_collision_sub() & COL_ALL)
+  {
+    ++collision_D;
   }
 }
 

@@ -203,6 +203,7 @@ unsigned char enemy_health[MAX_ENEMY];
 unsigned char enemy_room[MAX_ENEMY];
 unsigned char enemy_actual_x[MAX_ENEMY];
 unsigned char enemy_type[MAX_ENEMY];
+unsigned char enemy_dir[MAX_ENEMY];
 const unsigned char *enemy_anim[MAX_ENEMY];
 unsigned char enemy_frames;
 

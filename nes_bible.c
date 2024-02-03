@@ -1165,44 +1165,72 @@ void enemy_moves(void)
 		// for bg collisions
 		Generic.x = enemy_x[index];
 		Generic.y = enemy_y[index] + 6; // mid point
-		Generic.width = 13;
-		Generic.height = 15;
-
-		// note, Generic2 is the hero's x position
+		Generic.width = ENEMY_SNAIL_WIDTH;
+		Generic.height = ENEMY_SNAIL_HEIGHT;
 
 		if (enemy_frames < 10)
 		{
-			enemy_anim[index] = animate_snail1left_data;
+			if (enemy_dir[index] == LEFT)
+			{
+				enemy_anim[index] = animate_snail1left_data;
+			}
+			else
+			{
+				enemy_anim[index] = animate_snail1right_data;
+			}
 		}
 		else if (enemy_frames < 20)
 		{
-			enemy_anim[index] = animate_snail2left_data;
+			if (enemy_dir[index] == LEFT)
+			{
+				enemy_anim[index] = animate_snail2left_data;
+			}
+			else
+			{
+				enemy_anim[index] = animate_snail2right_data;
+			}
 		}
 		else if (enemy_frames < 30)
 		{
-			enemy_anim[index] = animate_snail3left_data;
+			if (enemy_dir[index] == LEFT)
+			{
+				enemy_anim[index] = animate_snail3left_data;
+			}
+			else
+			{
+				enemy_anim[index] = animate_snail3right_data;
+			}
 		}
 		else
 		{
-			enemy_anim[index] = animate_snail3left_data;
+			if (enemy_dir[index] == LEFT)
+			{
+				enemy_anim[index] = animate_snail3left_data;
+			}
+			else
+			{
+				enemy_anim[index] = animate_snail3right_data;
+			}
 			enemy_frames = 0;
 		}
+
 		if (frame_counter % 3 == 0)
 		{
 
+			// note, Generic2 is the hero's x position
 			if (enemy_x[index] > Generic2.x)
 			{
-
-				Generic.x -= 1;
-
 				Generic.x -= 1; // test going left
 				bg_collision_fast();
 				if (collision_L)
 					return;
-				// else, no collision, do the move.
-				if (enemy_actual_x[index] == 0)
-					--enemy_room[index];
-				--enemy_actual_x[index];
+				if (collision_D) // needs ground under it
+				{
+					if (enemy_actual_x[index] == 0)
+						--enemy_room[index];
+					--enemy_actual_x[index];
+					enemy_dir[index] = LEFT;
+				}
 			}
 			else if (enemy_x[index] < Generic2.x)
 			{
@@ -1212,9 +1240,15 @@ void enemy_moves(void)
 				bg_collision_fast();
 				if (collision_R)
 					return;
-				++enemy_actual_x[index];
-				if (enemy_actual_x[index] == 0)
-					++enemy_room[index];
+				if (collision_D)
+				{
+					++enemy_actual_x[index];
+					enemy_dir[index] = RIGHT;
+					if (enemy_actual_x[index] == 0)
+					{
+						++enemy_room[index];
+					}
+				}
 			}
 		}
 	}

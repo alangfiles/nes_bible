@@ -12824,7 +12824,7 @@ L3448:	lda     _pad1
 ;
 ; direction_y = DOWN;
 ;
-	lda     #$00
+	lda     #$04
 	sta     _direction_y
 ;
 ; if (bg_coll_ladder_top_under_player())
@@ -12892,7 +12892,7 @@ L2FD2:	lda     _player_on_ladder
 ;
 ; direction_y = DOWN;
 ;
-	lda     #$00
+	lda     #$04
 	sta     _direction_y
 ;
 ; ++player_on_ladder_pose;
@@ -12931,7 +12931,7 @@ L3449:	lda     _pad1
 ;
 ; direction_y = UP;
 ;
-	lda     #$01
+	lda     #$03
 	sta     _direction_y
 ;
 ; ++player_on_ladder_pose;
@@ -13129,7 +13129,7 @@ L344F:	lda     _pad1_new
 ;
 ; direction_y = UP;
 ;
-	lda     #$01
+	lda     #$03
 	sta     _direction_y
 ;
 ; if (bg_coll_ladder())
@@ -18363,21 +18363,22 @@ L2CE3:	lda     _level_down
 ; if (direction_y == DOWN)
 ;
 L350A:	lda     _direction_y
+	cmp     #$04
 	bne     L2CF2
 ;
 ; BoxGuy1.y = 0x0400; // put the user near the top of screen
 ;
-	ldx     #$04
+	tax
 ;
 ; else
 ;
-	jmp     L3510
+	jmp     L3511
 ;
 ; BoxGuy1.y = 0xE000; // put the user above the bottom of the screen.
 ;
 L2CF2:	ldx     #$E0
-	lda     #$00
-L3510:	sta     _BoxGuy1+2
+L3511:	lda     #$00
+	sta     _BoxGuy1+2
 	stx     _BoxGuy1+2+1
 ;
 ; ppu_off();

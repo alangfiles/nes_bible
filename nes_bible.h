@@ -1,25 +1,26 @@
+// PLAYER + GLOBAL
 #define ACCEL 30
 #define LADDER_ACCEL 20
 #define DECEL 50
 #define HITSTUN_DECEL 65
-
+#define MAX_SPEED 0x160
+#define MAX_LADDER_SPEED 0x100
+#define JUMP_VEL -0x480
 #define MAX_PLAYER_HEALTH 28
+#define GRAVITY 0x3c
+#define MAX_PROJECTILES 3
+#define PROJECTILE_COOLDOWN_FRAMES 10
 
+//Collision + Extra
 #define COL_DOWN 0x80
 #define COL_ALL 0x40
 #define COL_LADDER 0x01
 #define COL_LADDER_TOP 0x02
 #define TURN_OFF 0xff
 
-#define GRAVITY 0x3c
-#define MAX_SPEED 0x160
-#define MAX_LADDER_SPEED 0x100
-#define JUMP_VEL -0x480
+//SCROLL
 #define MAX_RIGHT 0x9000
 #define MAX_LEFT 0x4000
-
-#define MAX_PROJECTILES 3
-#define PROJECTILE_COOLDOWN_FRAMES 10
 
 // needed for sprites
 #define B4 0
@@ -73,8 +74,8 @@ unsigned char sprite_frame_counter;
 unsigned char frame_counter;
 #define LEFT 0
 #define RIGHT 1
-#define DOWN 0
-#define UP 1
+#define DOWN 4
+#define UP 3
 
 int address;
 unsigned char x; // room loader code

@@ -2,7 +2,8 @@
 #define LADDER_ACCEL 20
 #define DECEL 50
 #define HITSTUN_DECEL 65
-#define OFF 0xff
+
+#define MAX_PLAYER_HEALTH 28
 
 #define COL_DOWN 0x80
 #define COL_ALL 0x40
@@ -25,7 +26,7 @@
 #define B3 0
 #define OAM_PRIO 0
 
-#pragma bss - name(push, "ZEROPAGE")
+#pragma bss-name(push, "ZEROPAGE")
 
 // GLOBAL VARIABLES
 unsigned char debug;
@@ -133,7 +134,7 @@ unsigned char invul_frames;
 unsigned char projectile_cooldown;
 unsigned char projectile_count;
 unsigned char projectile_index;
-unsigned char projectiles_list[] = {OFF, OFF, OFF, OFF};
+unsigned char projectiles_list[] = {TURN_OFF, TURN_OFF, TURN_OFF, TURN_OFF};
 unsigned char projectiles_x[] = {0, 0, 0, 0};
 unsigned char projectiles_y[] = {0, 0, 0, 0};
 
@@ -146,7 +147,7 @@ const unsigned char shuffle_array[] = {
 		15, 13, 11, 9, 7, 5, 3, 1, 14, 12, 10, 8, 6, 4, 2, 0};
 unsigned char offset;
 
-#pragma bss - name(push, "BSS")
+#pragma bss-name(push, "BSS")
 
 unsigned char c_map[240];
 unsigned char c_map2[240]; // not used in this example

@@ -121,6 +121,13 @@ void draw_player_sprites()
   // sprite_frame_counter
   ++sprite_frame_counter;
 
+  if (invul_frames > 0 && frame_counter % 2 == 0)
+  {
+    // player flashes when invlu, so every other frame
+    // don't draw the player
+    return;
+  }
+
   // countdown player shot
   if (player_shooting > 0)
   {
@@ -129,8 +136,6 @@ void draw_player_sprites()
 
   if (player_in_hitstun)
   {
-    --player_in_hitstun;
-
     if (direction == LEFT)
     {
       tempint = animate_recoilleft_data;

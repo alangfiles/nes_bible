@@ -21,6 +21,7 @@ TODO List:
 #include "LIB/nesdoug.h"
 #include "Sprites.h" // holds our metasprite data
 #include "nes_bible.h"
+#include "enemy_stats.h"
 #include "collision.c"
 #include "player_sprites.c"
 
@@ -86,6 +87,11 @@ void main(void)
 			handle_scrolling();
 
 			draw_sprites();
+
+			if (BoxGuy1.health == 0 || BoxGuy1.health > MAX_PLAYER_HEALTH) // if it wraps
+			{
+				death = 1;
+			}
 
 			if (death)
 			{
@@ -227,17 +233,29 @@ void reset(void)
 	death = 0;
 	BoxGuy1.x = 0x4000;
 	BoxGuy1.y = 0x8400;
-	BoxGuy1.health = 28;
+	BoxGuy1.health = MAX_PLAYER_HEALTH;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
 	level = 0;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
 	debug = 0;
+	player_in_hitstun = 0;
+	invul_frames = 0;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 	{
-		projectiles_list[temp1] = OFF;
+		projectiles_list[temp1] = TURN_OFF;
+	}
+
+	// clear all enemies and entities
+	for (temp1 = 0; temp1 < MAX_ENTITY; ++temp1)
+	{
+		entity_y[temp1] = TURN_OFF;
+	}
+	for (temp1 = 0; temp1 < MAX_ENEMY; ++temp1)
+	{
+		enemy_y[temp1] = TURN_OFF;
 	}
 
 	ppu_mask(0); // grayscale mode
@@ -390,7 +408,7 @@ void draw_sprites(void)
 	// draw projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 	{
-		if (projectiles_list[temp1] != OFF)
+		if (projectiles_list[temp1] != TURN_OFF)
 		{
 			temp6 = projectiles_y[temp1]; //+ sine_wave[frame_counter % 10];
 			oam_meta_spr(projectiles_x[temp1], temp6, animate_orb0_data);
@@ -494,6 +512,15 @@ void draw_sprites(void)
 
 void movement(void)
 {
+
+	if (invul_frames > 0)
+	{
+		--invul_frames;
+	}
+	if (player_in_hitstun)
+	{
+		--player_in_hitstun;
+	}
 
 	if (player_in_hitstun > 0)
 	{
@@ -761,7 +788,7 @@ void movement(void)
 		// check if there's an empty shot spot
 		for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
 		{
-			if (projectiles_list[temp1] == OFF)
+			if (projectiles_list[temp1] == TURN_OFF)
 			{
 				temp2 = 1;
 				break;
@@ -1117,10 +1144,6 @@ void entity_obj_init(void)
 
 void enemy_moves(void)
 {
-	if (invul_frames > 0)
-	{
-		--invul_frames;
-	}
 
 	// check enemy collision with projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -1232,7 +1255,7 @@ void sprite_obj_init(void)
 		enemy_type[index] = temp1;
 		if (enemy_type[index] == ENEMY_SNAIL)
 		{
-			enemy_health[index] = 2; // set enemy health here
+			enemy_health[index] = ENEMY_SNAIL_HEALTH; // set enemy health here
 		}
 
 		++index2;
@@ -1325,14 +1348,10 @@ void sprite_collisions(void)
 					// check for player collision:
 					if (invul_frames == 0)
 					{
-						enemy_health[index] -= 1; // hit the enemy running into it?
-						BoxGuy1.health -= 2;
-						player_in_hitstun = 30;
-						invul_frames = 60;
-						if (BoxGuy1.health == 0)
-						{
-							death = 1;
-						}
+						// enemy_health[index] -= 1; // hit the enemy running into it?
+						BoxGuy1.health -= ENEMY_SNAIL_DAMAGE; // check for overflow
+						player_in_hitstun = ENEMY_SNAIL_PLAYER_HITSTUN;
+						invul_frames = ENEMY_SNAIL_PLAYER_INVUL;
 					}
 					break;
 				default:

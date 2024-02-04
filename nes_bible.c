@@ -1157,6 +1157,11 @@ void enemy_moves(void)
 			{
 				projectiles_list[temp1] = TURN_OFF;
 				--enemy_health[index];
+				if (enemy_health[index] == 0 || enemy_health[index] > 240) // check for overflow with 240
+				{
+					enemy_y[index] = TURN_OFF;
+					enemy_active[index] = 0;
+				}
 			}
 		}
 	}

@@ -136,7 +136,8 @@ void main(void)
 				}
 				else
 				{
-					++death; // if we're not changing levels, they're dying
+					// todie or not todie
+					//  ++death; // if we're not changing levels, they're dying
 				}
 			}
 		}

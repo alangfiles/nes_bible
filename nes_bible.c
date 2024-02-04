@@ -1388,7 +1388,7 @@ void sprite_collisions(void)
 					// check for player collision:
 					if (invul_frames == 0)
 					{
-						// enemy_health[index] -= 1; // hit the enemy running into it?
+						// enemy_health[index] -= 1;  // hit the enemy running into it?
 						BoxGuy1.health -= ENEMY_SNAIL_DAMAGE; // check for overflow
 						player_in_hitstun = ENEMY_SNAIL_PLAYER_HITSTUN;
 						invul_frames = ENEMY_SNAIL_PLAYER_INVUL;

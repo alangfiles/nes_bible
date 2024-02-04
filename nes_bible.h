@@ -72,6 +72,7 @@ unsigned char direction = 1;	 // facing left or right?
 unsigned char direction_y = 1; // going up or down
 unsigned char sprite_frame_counter;
 unsigned char frame_counter;
+unsigned char frame_counter2;
 #define LEFT 0
 #define RIGHT 1
 #define DOWN 4

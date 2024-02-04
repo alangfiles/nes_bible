@@ -121,11 +121,15 @@ void draw_player_sprites()
   // sprite_frame_counter
   ++sprite_frame_counter;
 
-  if (invul_frames > 0 && frame_counter % 2 == 0)
+#define FLASH_DURATION 8
+#define TOTAL_DURATION 16 // 4 frames on + 4 frames off
+
+  if (invul_frames > 0)
   {
-    // player flashes when invlu, so every other frame
-    // don't draw the player
-    return;
+    if (frame_counter % TOTAL_DURATION < FLASH_DURATION)
+    {
+      return;
+    }
   }
 
   // countdown player shot

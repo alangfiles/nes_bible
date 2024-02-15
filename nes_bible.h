@@ -61,7 +61,6 @@ unsigned char temp_cmap1;
 unsigned char temp_cmap2;
 unsigned char level;
 unsigned char offset;
-unsigned char change_level;
 unsigned char level_up;
 unsigned char level_down;
 unsigned char eject_L;				 // from the left

@@ -87,6 +87,25 @@ const unsigned char *const Enemy_list[] = {
     level_7_enemies};
 
 const unsigned char level_1_entities[] = {
+    230, 2, 0, ENTITY_PIT,
+    230, 2, 16, ENTITY_PIT,
+    230, 2, 32, ENTITY_PIT,
+    230, 2, 48, ENTITY_PIT,
+    230, 2, 64, ENTITY_PIT,
+    230, 7, 0, ENTITY_PIT,
+    230, 7, 16, ENTITY_PIT,
+    230, 7, 32, ENTITY_PIT,
+    230, 7, 48, ENTITY_PIT,
+    230, 7, 64, ENTITY_PIT,
+    230, 8, 96, ENTITY_PIT,
+    230, 8, 112, ENTITY_PIT,
+    230, 8, 128, ENTITY_PIT,
+    230, 8, 176, ENTITY_PIT,
+    230, 8, 192, ENTITY_PIT,
+    224, 9, 160, ENTITY_PIT,
+    224, 9, 176, ENTITY_PIT,
+    224, 9, 192, ENTITY_PIT,
+    224, 9, 208, ENTITY_PIT,
     0x00, 10, 0xA0, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_2_entities[] = {

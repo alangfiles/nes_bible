@@ -8,13 +8,15 @@
 
 /*
 TODO List:
-	[] transition to levels (entity list)
 	[] sign posts / text in game?
-	[] fix enemy collision (with ground and other enemies)
 	[] full level
-	[] change death to be a certain collision, not just over screen edge?
-	[] change level up to be certain collision, not just oer the screen
 	[/] game modes
+
+	[] enemy dying animation
+	[] enemy hit animation?
+	[] level transition doesn't work?
+	[] display text on death
+	[] fix enemy collision (down)
 */
 
 #include "LIB/neslib.h"
@@ -99,23 +101,23 @@ void main(void)
 				game_mode = MODE_DEATH;
 			}
 
-			// check screen flip
-
-			if (high_byte(BoxGuy1.y) > 0xf0)
-			{ // player is offscreen
-				if (change_level)
+			// player is offscreen
+			if (high_byte(BoxGuy1.y) > 0xd8) // overflow (0xff) or bottom 8 pix of screen
+			{
+				if (level_up || level_down)
 				{
-					pal_fade_to(4, 0); // fade to black
-					game_mode = MODE_SWITCH;
-					change_level = 0;
-					room_to_load = 0;
+					pal_fade_to(4, 0);			 // fade to black
+					game_mode = MODE_SWITCH; // this handles loading the level
 					scroll_x = 0;
 
 					if (level_up)
 					{
 						++level;
 						level_up = 0;
+						room_to_load = 0;
+						// scroll_x = 0;
 					}
+
 					if (level_down)
 					{
 						--level;
@@ -126,11 +128,11 @@ void main(void)
 
 					if (direction_y == DOWN)
 					{
-						BoxGuy1.y = 0x0400; // put the user near the top of screen
+						BoxGuy1.y = 0x0800; // put the user near the top of screen
 					}
 					else
-					{											// 0xf000 is button of screen
-						BoxGuy1.y = 0xE000; // put the user above the bottom of the screen.
+					{											// 0xDF00 is bottom of screen
+						BoxGuy1.y = 0xD000; // put the user above the bottom of the screen.
 					}
 					ppu_off();
 				}
@@ -195,7 +197,7 @@ void main(void)
 				oam_clear();
 				scroll_x = 0;
 				set_scroll_x(scroll_x);
-				if (level < 9)
+				if (level < 20)
 				{
 					load_room();
 					game_mode = MODE_GAME;
@@ -1349,11 +1351,9 @@ void entity_collisions(void)
 					++death_flag;
 					break;
 				case ENTITY_LEVEL_UP:
-					++change_level;
 					++level_up;
 					break;
 				case ENTITY_LEVEL_DOWN:
-					++change_level;
 					++level_down;
 					break;
 				default:

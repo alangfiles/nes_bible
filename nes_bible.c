@@ -19,6 +19,17 @@ TODO List:
 	[] fix enemy collision (down)
 */
 
+/*
+BUGS:
+	[] enemy hits you and then scrolling doens't work
+	[] entities are showing way too many / flickering, some bugthere
+	[] entity width is weird
+	[] death trigger isn't set / screen transition
+	[] player falls off ladders on screen transition
+
+	[] add spikes/damage
+*/
+
 #include "LIB/neslib.h"
 #include "LIB/nesdoug.h"
 #include "Sprites.h" // holds our metasprite data
@@ -101,46 +112,74 @@ void main(void)
 				game_mode = MODE_DEATH;
 			}
 
-			// player is offscreen
-			if (high_byte(BoxGuy1.y) > 0xd8) // overflow (0xff) or bottom 8 pix of screen
+			// check for player offscreen level flags
+
+			// player goes up to next level
+			if (high_byte(BoxGuy1.y) < 0x08 && level_up && player_on_ladder)
 			{
-				if (level_up || level_down)
-				{
-					pal_fade_to(4, 0);			 // fade to black
-					game_mode = MODE_SWITCH; // this handles loading the level
-					scroll_x = 0;
+				BoxGuy1.y = 0xD000;			 // put the user above the bottom of the screen.
+				pal_fade_to(4, 0);			 // fade to black
+				game_mode = MODE_SWITCH; // this handles loading the level
+				scroll_x = 0;
+				ppu_off();
+				++level;
+				level_up = 0;
+				room_to_load = 0;
+			}
 
-					if (level_up)
-					{
-						++level;
-						level_up = 0;
-						room_to_load = 0;
-						// scroll_x = 0;
-					}
+			// player goes down to next level
+			if (high_byte(BoxGuy1.y) > 0xd0 && level_up) // todo: might need less than 0xd0
+			{
+				BoxGuy1.y = 0x1800;			 // put the user near the top of screen
+				pal_fade_to(4, 0);			 // fade to black
+				game_mode = MODE_SWITCH; // this handles loading the level
+				ppu_off();
+				scroll_x = 0;
+				++level;
+				level_up = 0;
+				room_to_load = 0;
+			}
 
-					if (level_down)
-					{
-						--level;
-						level_down = 0;
-						room_to_load = level_max_rooms[level] - 1;
-						// set max scroll and all that jazz.
-					}
+			// player goes up to previous level
+			if (high_byte(BoxGuy1.y) < 0x08 && level_down && player_on_ladder)
+			{
+				BoxGuy1.y = 0xD000;			 // put the user above the bottom of the screen.
+				pal_fade_to(4, 0);			 // fade to black
+				game_mode = MODE_SWITCH; // this handles loading the level
+				ppu_off();
 
-					if (direction_y == DOWN)
-					{
-						BoxGuy1.y = 0x0800; // put the user near the top of screen
-					}
-					else
-					{											// 0xDF00 is bottom of screen
-						BoxGuy1.y = 0xD000; // put the user above the bottom of the screen.
-					}
-					ppu_off();
-				}
-				else
-				{
-					// todie or not todie
-					//  ++death; // if we're not changing levels, they're dying
-				}
+				scroll_x = 0;
+				--level;
+				level_down = 0;
+				max_rooms = level_max_rooms[level] - 1;
+				max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
+				scroll_x = max_scroll;
+				room_to_load = max_rooms;
+				// set max scroll and all that jazz.
+			}
+
+			// player goes down to previous level
+			if (high_byte(BoxGuy1.y) > 0xd0 && level_down)
+			{
+				BoxGuy1.y = 0x1800;			 // put the user near the top of screen
+				pal_fade_to(4, 0);			 // fade to black
+				game_mode = MODE_SWITCH; // this handles loading the level
+				ppu_off();
+				scroll_x = 0;
+				--level;
+				level_down = 0;
+
+				max_rooms = level_max_rooms[level] - 1;
+				max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
+				scroll_x = max_scroll;
+				room_to_load = max_rooms;
+				// set max scroll and all that jazz.
+			}
+
+			// player is crossing screen border and set to die.
+			if (high_byte(BoxGuy1.y) > 0xf0 && death_flag)
+			{
+				++death;
 			}
 		}
 		while (game_mode == MODE_DEATH)
@@ -466,7 +505,7 @@ void draw_sprites(void)
 			{
 				oam_meta_spr(temp_x, temp_y, animate_bread_data);
 			}
-			else if (entity_type[index2] == 0)
+			else if (entity_type[index2] == ENTITY_LEVEL_UP)
 			{
 				oam_meta_spr(temp_x, temp_y, animate_bun_data);
 			}
@@ -515,6 +554,14 @@ void draw_sprites(void)
 
 void movement(void)
 {
+
+	if (death_flag > 0)
+	{
+		// this is so we don't have a weird situation
+		// where the player triggers the death flag
+		// but doesn't cross the border til later
+		--death_flag;
+	}
 
 	if (invul_frames > 0)
 	{
@@ -673,7 +720,7 @@ void movement(void)
 			player_in_air = 0;
 			BoxGuy1.vel_y = 0;
 			BoxGuy1.vel_x = 0;
-			BoxGuy1.y += 0x800;
+			BoxGuy1.y += 0x500;
 		}
 	}
 
@@ -1324,7 +1371,7 @@ void entity_collisions(void)
 			switch (entity_type[index])
 			{
 			case ENTITY_PIT:
-				Generic2.width = 400;
+				Generic2.width = 16;
 				Generic2.height = 10;
 				break;
 			case ENTITY_LEVEL_UP:
@@ -1332,7 +1379,7 @@ void entity_collisions(void)
 				Generic2.height = 16;
 				break;
 			case ENTITY_LEVEL_DOWN:
-				Generic2.width = 400;
+				Generic2.width = 16;
 				Generic2.height = 16;
 				break;
 			default:
@@ -1348,7 +1395,7 @@ void entity_collisions(void)
 				switch (entity_type[index])
 				{
 				case ENTITY_PIT:
-					++death_flag;
+					death_flag = 30; // 30 frames the player can die in
 					break;
 				case ENTITY_LEVEL_UP:
 					++level_up;

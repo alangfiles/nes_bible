@@ -59,7 +59,7 @@ const unsigned char level_2_enemies[] = {
 const unsigned char level_3_enemies[] = {
     160, 1, 96, ENEMY_SNAIL,
     96, 2, 128, ENEMY_SNAIL,
-    144, 2, 230, ENEMY_SNAIL,
+    144, 2, 1, ENEMY_SNAIL,
     TURN_OFF};
 const unsigned char level_4_enemies[] = {
     // 48, 0, 48,  ENEMY_OWL,
@@ -70,8 +70,8 @@ const unsigned char level_5_enemies[] = {
     128, 0, 224, ENEMY_SNAIL,
     // 48, 0, 224,  ENEMY_OWL,
     192, 1, 176, ENEMY_SNAIL,
-    // 32, 2, 230,  ENEMY_OWL,
-    // 96, 3, 230,  ENEMY_OWL,
+    // 32, 2, LEVEL_BOTTOM,  ENEMY_OWL,
+    // 96, 3, LEVEL_BOTTOM,  ENEMY_OWL,
     96, 4, 192, ENEMY_SNAIL,
     TURN_OFF};
 const unsigned char level_6_enemies[] = {
@@ -81,52 +81,49 @@ const unsigned char level_6_enemies[] = {
 const unsigned char level_7_enemies[] = {
     TURN_OFF};
 
+#define LEVEL_BOTTOM 230
+#define LEVEL_TOP 0
+
 const unsigned char *const Enemy_list[] = {
     level_1_enemies, level_2_enemies, level_3_enemies,
     level_4_enemies, level_5_enemies, level_6_enemies,
     level_7_enemies};
 
 const unsigned char level_1_entities[] = {
-    230, 2, 0, ENTITY_PIT,
-    230, 2, 16, ENTITY_PIT,
-    230, 2, 32, ENTITY_PIT,
-    230, 2, 48, ENTITY_PIT,
-    230, 2, 64, ENTITY_PIT,
-    230, 7, 0, ENTITY_PIT,
-    230, 7, 16, ENTITY_PIT,
-    230, 7, 32, ENTITY_PIT,
-    230, 7, 48, ENTITY_PIT,
-    230, 7, 64, ENTITY_PIT,
-    230, 8, 96, ENTITY_PIT,
-    230, 8, 112, ENTITY_PIT,
-    230, 8, 128, ENTITY_PIT,
-    230, 8, 176, ENTITY_PIT,
-    230, 8, 192, ENTITY_PIT,
-    224, 9, 160, ENTITY_PIT,
-    224, 9, 176, ENTITY_PIT,
-    224, 9, 192, ENTITY_PIT,
-    224, 9, 208, ENTITY_PIT,
-    0x00, 10, 0xA0, ENTITY_LEVEL_UP,
+    LEVEL_BOTTOM, 2, 1, ENTITY_PIT,
+    LEVEL_BOTTOM, 2, 16, ENTITY_PIT,
+    LEVEL_BOTTOM, 2, 64, ENTITY_PIT,
+    LEVEL_BOTTOM, 7, 1, ENTITY_PIT,
+    LEVEL_BOTTOM, 7, 64, ENTITY_PIT,
+    LEVEL_BOTTOM, 8, 96, ENTITY_PIT,
+    LEVEL_BOTTOM, 8, 112, ENTITY_PIT,
+    LEVEL_BOTTOM, 8, 176, ENTITY_PIT,
+    LEVEL_BOTTOM, 8, 192, ENTITY_PIT,
+    LEVEL_BOTTOM, 9, 160, ENTITY_PIT,
+    LEVEL_BOTTOM, 9, 176, ENTITY_PIT,
+    LEVEL_BOTTOM, 9, 192, ENTITY_PIT,
+    LEVEL_BOTTOM, 9, 208, ENTITY_PIT,
+    LEVEL_TOP, 10, 0xA0, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_2_entities[] = {
-    0xE0, 0, 0xA0, ENTITY_LEVEL_DOWN,
-    0x00, 0, 0x80, ENTITY_LEVEL_UP,
+    LEVEL_BOTTOM, 0, 0xA0, ENTITY_LEVEL_DOWN,
+    LEVEL_TOP, 0, 0x80, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_3_entities[] = {
-    230, 0, 128, ENTITY_LEVEL_DOWN,
-    230, 3, 176, ENTITY_LEVEL_UP,
+    LEVEL_BOTTOM, 0, 128, ENTITY_LEVEL_DOWN,
+    LEVEL_BOTTOM, 3, 176, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_4_entities[] = {
-    0, 0, 176, ENTITY_LEVEL_DOWN,
-    230, 0, 48, ENTITY_LEVEL_UP,
+    LEVEL_TOP, 0, 176, ENTITY_LEVEL_DOWN,
+    LEVEL_BOTTOM, 0, 48, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_5_entities[] = {
-    0, 0, 48, ENTITY_LEVEL_DOWN,
-    0, 4, 176, ENTITY_LEVEL_UP,
+    LEVEL_TOP, 0, 48, ENTITY_LEVEL_DOWN,
+    LEVEL_TOP, 4, 176, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_6_entities[] = {
-    230, 0, 176, ENTITY_LEVEL_DOWN,
-    0, 0, 176, ENTITY_LEVEL_UP,
+    LEVEL_BOTTOM, 0, 176, ENTITY_LEVEL_DOWN,
+    LEVEL_TOP, 0, 176, ENTITY_LEVEL_UP,
     TURN_OFF};
 const unsigned char level_7_entities[] = {
     TURN_OFF};

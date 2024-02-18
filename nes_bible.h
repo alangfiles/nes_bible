@@ -10,6 +10,8 @@
 #define GRAVITY 0x3c
 #define MAX_PROJECTILES 3
 #define PROJECTILE_COOLDOWN_FRAMES 10
+#define PROJECTILE_SPEED 3
+#define PROJECTILE_SPEED_WITH_SCROLL 5
 
 //Collision + Extra
 #define COL_DOWN 0x80

@@ -17,6 +17,7 @@ TODO List:
 	[] level transition doesn't work?
 	[] display text on death
 	[] fix enemy collision (down)
+	[] add text for death screen
 */
 
 /*
@@ -338,22 +339,22 @@ void projectile_movement(void)
 
 					if ((BoxGuy1.x <= MAX_LEFT) && (pad1 & PAD_LEFT))
 					{
-						projectiles_x[temp1] += 3;
+						projectiles_x[temp1] += PROJECTILE_SPEED_WITH_SCROLL;
 					}
 					else
 					{
-						projectiles_x[temp1] += 2;
+						projectiles_x[temp1] += PROJECTILE_SPEED;
 					}
 				}
 				else if (projectiles_list[temp1] == LEFT)
 				{
 					if ((BoxGuy1.x >= MAX_RIGHT) && (pad1 & PAD_RIGHT))
 					{
-						projectiles_x[temp1] -= 3;
+						projectiles_x[temp1] -= PROJECTILE_SPEED_WITH_SCROLL;
 					}
 					else
 					{
-						projectiles_x[temp1] -= 2;
+						projectiles_x[temp1] -= PROJECTILE_SPEED;
 					}
 				}
 			}
@@ -501,7 +502,7 @@ void draw_sprites(void)
 			continue;
 		if (temp_y < 0xf0)
 		{
-			if (entity_type[index2] == ENTITY_PIT)
+			if (entity_type[index2] == ENTITY_PIT_WIDE_64)
 			{
 				oam_meta_spr(temp_x, temp_y, animate_bread_data);
 			}
@@ -1370,16 +1371,8 @@ void entity_collisions(void)
 		{
 			switch (entity_type[index])
 			{
-			case ENTITY_PIT:
-				Generic2.width = 16;
-				Generic2.height = 10;
-				break;
-			case ENTITY_LEVEL_UP:
-				Generic2.width = 16;
-				Generic2.height = 16;
-				break;
-			case ENTITY_LEVEL_DOWN:
-				Generic2.width = 16;
+			case ENTITY_PIT_WIDE_64:
+				Generic2.width = 64;
 				Generic2.height = 16;
 				break;
 			default:
@@ -1390,13 +1383,33 @@ void entity_collisions(void)
 
 			Generic2.x = entity_x[index];
 			Generic2.y = entity_y[index];
-			if (check_collision(&Generic, &Generic2))
+			if (entity_type[index] == ENTITY_PIT_WIDE_64)
+			{
+				// don't bother running collision for pits, just check Y
+				if (Generic.y >= Generic2.y)
+				{
+					death_flag = 30; // 30 frames the player can die in
+				}
+			}
+			// else if (entity_type[index] == ENTITY_LEVEL_UP_FULL)
+			// {
+			// 	if (Generic.y >= Generic2.y)
+			// 	{
+			// 		++level_up;
+			// 	}
+			// }
+			// else if (entity_type[index] == ENTITY_LEVEL_DOWN_FULL)
+			// {
+			// 	if (Generic.y >= Generic2.y)
+			// 	{
+			// 		++level_down;
+			// 	}
+			// }
+			// TODO: do I even need formal collision checking?
+			else if (check_collision(&Generic, &Generic2))
 			{
 				switch (entity_type[index])
 				{
-				case ENTITY_PIT:
-					death_flag = 30; // 30 frames the player can die in
-					break;
 				case ENTITY_LEVEL_UP:
 					++level_up;
 					break;

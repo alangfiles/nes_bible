@@ -250,6 +250,7 @@ void enemy_moves(void);
 void reset(void);
 void sprite_obj_init(void);
 void entity_obj_init(void);
+void init_death(void);
 
 char bg_coll_L(void);
 char bg_coll_R(void);

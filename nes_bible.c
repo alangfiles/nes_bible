@@ -109,8 +109,7 @@ void main(void)
 
 			if (death)
 			{
-				pal_fade_to(4, 0); // fade to black
-				game_mode = MODE_DEATH;
+				init_death();
 			}
 
 			// check for player offscreen level flags
@@ -189,7 +188,6 @@ void main(void)
 
 			pad1 = pad_poll(0); // read the first controller
 			pad1_new = get_pad_new(0);
-
 			// draw_sprites();
 
 			if (pad1_new & PAD_START)
@@ -1463,4 +1461,35 @@ void sprite_collisions(void)
 			}
 		}
 	}
+}
+void init_death(void)
+{
+	pal_fade_to(4, 0); // fade to black
+	ppu_off();
+	// clear nametables
+	for (y = 0;; y += 0x20)
+	{
+		for (x = 0;; x += 0x20)
+		{
+			address = get_ppu_addr(0, x, y);
+			// index = (y & 0xf0) + (x >> 4);
+			buffer_4_mt(address, 0); // ppu_address, index to the data
+			flush_vram_update2();
+			if (x == 0xe0)
+				break;
+		}
+		if (y == 0xe0)
+			break;
+	}
+	scroll_x = 0;
+	set_scroll_x(0);
+	oam_clear();
+
+	game_mode = MODE_DEATH;
+	multi_vram_buffer_horz("GAME OVER", 10, NTADR_A(11, 6));
+
+	multi_vram_buffer_horz("PRESS START", 12, NTADR_A(10, 14));
+
+	ppu_on_all();
+	pal_fade_to(0, 4); // fade to black
 }

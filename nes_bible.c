@@ -1371,7 +1371,7 @@ void entity_collisions(void)
 		{
 			switch (entity_type[index])
 			{
-			case ENTITY_PIT_WIDE_64:
+			case ENTITY_PIT:
 				Generic2.width = 64;
 				Generic2.height = 16;
 				break;
@@ -1383,7 +1383,7 @@ void entity_collisions(void)
 
 			Generic2.x = entity_x[index];
 			Generic2.y = entity_y[index];
-			if (entity_type[index] == ENTITY_PIT_WIDE_64)
+			if (entity_type[index] == ENTITY_PIT_WIDE_64) // for full lenght check?
 			{
 				// don't bother running collision for pits, just check Y
 				if (Generic.y >= Generic2.y)
@@ -1410,6 +1410,9 @@ void entity_collisions(void)
 			{
 				switch (entity_type[index])
 				{
+				case ENTITY_PIT:
+					death_flag = 30; // 30 frames the player can die in
+					break;
 				case ENTITY_LEVEL_UP:
 					++level_up;
 					break;

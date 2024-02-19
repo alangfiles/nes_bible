@@ -723,7 +723,8 @@ void movement(void)
 	if (pad1 & PAD_DOWN)
 	{
 		direction_y = DOWN;
-		if (bg_coll_ladder_top_under_player())
+		// TODO: not hardcode the last level here
+		if (bg_coll_ladder_top_under_player() && level != 6)
 		{
 			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00; // tried to square the player to the ladder
 			player_on_ladder = 1;

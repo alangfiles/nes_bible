@@ -261,7 +261,7 @@ void reset(void)
 	BoxGuy1.health = MAX_PLAYER_HEALTH;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 1;				// debug, change starting level
+	level = 0;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
 	debug = 1;
 	player_in_hitstun = 0;
@@ -354,7 +354,7 @@ void handle_scrolling(void)
 	// figure out if we're drawing to the right or left
 	if (!r_scroll_frames && !l_scroll_frames)
 	{
-		if (direction == RIGHT)
+		if (BoxGuy1.vel_x > 0)
 		{
 			r_scroll_frames = 4;
 		}

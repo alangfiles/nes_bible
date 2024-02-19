@@ -13,28 +13,7 @@ TODO List:
 	[] enemy dying animation
 	[] enemy hit animation?
 	[] level transition doesn't work?
-	[] display text on death
 	[] fix enemy collision (down)
-	[] add text for death screen
-*/
-
-/*
-BUGS:
-	1. There's a snail in the middle of level 2 now, idk why I probably moved it accidentally (I hope).
-2. Ladder snapping doesn't work if you're not squarely scrolled into the nametable.
-3. Ladder transitions don't always work. (player moves off ladder) Level 0 -> Level 1 doesn't work, and going down doesn't work, and there's weird zipping, but Level 3->Level4 and back Level4->Level3 work really well and I don't know why that one works and the others don't.
-4. you can jump into Level1 from Level0, by jumping up the ladder not climbing it, it'll drop you at the top of level 1.
-5. Spikes don't work.
-6. You can go down ladder at Level6.
-7. Snail get stuck and don't move to the end of a platform.  This does not seem to happen to all of them.  This may change with the updated levels?
-8. If I go down the ladder from level 1 to level 0 - he sure does move fast down the ladder.  When you get back to level 0, you can't climb back up.  Also, you can't scroll backwards once there.
-9. Level 1 - Ladder in the middle of the level (doesn't change stages/just the one that goes between platforms) if standing to the left of it, you end up clipping into the "stone."  THIS APPPLIES TO ALL LADDERS
-10. Level 2 - just after entering, if you jump off the cliff to the left, you loop to the top.  Seems that it could be solved with the wide level down entit
-11. Levle 3 - If you find yourself here after climbinng up and down into level 2...it seems that the alignment of the sprite gets mess up.  As in, the postioning to get on a ladder seems to change
-12. Level 5 - If you transition back to level 4, scrolling breaks
-13. The keyboard space " " is in the wrong space. It should be before the exclamation mark. There's an empty space before the A and that's the ASCII @ sign space. Is it impossible for brian to move the blank space at 64 with the space before the exclaimation at 32?
-14. Player can get hit by enemy and pushed into screen transition without scrolling code called
-
 */
 
 #include "LIB/neslib.h"
@@ -134,7 +113,7 @@ void main(void)
 			}
 
 			// player goes down to next level
-			if (high_byte(BoxGuy1.y) > 0xd0 && level_up) // todo: might need less than 0xd0
+			if (high_byte(BoxGuy1.y) > 0xd0 && high_byte(BoxGuy1.y) < 0xd9 && level_up) // todo: might need less than 0xd0
 			{
 				BoxGuy1.y = 0x1800;			 // put the user near the top of screen
 				pal_fade_to(4, 0);			 // fade to black
@@ -776,6 +755,10 @@ void movement(void)
 		}
 	}
 	BoxGuy1.y += BoxGuy1.vel_y; // add gravity to y; (make him go up or down)
+	if (BoxGuy1.y > 0xf000)			// limit how high he can go
+	{
+		BoxGuy1.y = 0x0000;
+	}
 
 	Generic.x = high_byte(BoxGuy1.x);
 	Generic.y = high_byte(BoxGuy1.y);

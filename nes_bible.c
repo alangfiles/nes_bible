@@ -379,8 +379,6 @@ void load_room(void)
 			break;
 	}
 
-	// if room has more than one room, load a little of the second.
-
 	ppu_off();
 	// a little bit in the next room
 	set_data_pointer(stage1_levels_list[offset + 1]);
@@ -395,32 +393,19 @@ void load_room(void)
 		if (y == 0xe0)
 			break;
 	}
-	ppu_off();
 	// a little bit in the previous room
-	// TODO this doesn't work
-	// set_data_pointer(stage1_levels_list[offset - 1]);
-	// for (y = 0;; y += 0x20)
-	// {
-	// 	x = 240;
-	// 	temp1 = (nametable_to_load + 1) % 2;
-	// 	address = get_ppu_addr(temp1, x, y);
-	// 	index = (y & 0xf0);
-	// 	buffer_4_mt(address, index); // ppu_address, index to the data
-	// 	flush_vram_update2();
-	// 	if (y == 0xe0)
-	// 		break;
-	// }
-	// for (y = 0;; y += 0x20)
-	// {
-	// 	x = 248;
-	// 	temp1 = (nametable_to_load + 1) % 2;
-	// 	address = get_ppu_addr(temp1, x, y);
-	// 	index = (y & 0xf0);
-	// 	buffer_4_mt(address, index); // ppu_address, index to the data
-	// 	flush_vram_update2();
-	// 	if (y == 0xe0)
-	// 		break;
-	// }
+	set_data_pointer(stage1_levels_list[offset - 1]);
+	for (y = 0;; y += 0x20)
+	{
+		x = 240;
+		temp1 = (nametable_to_load + 1) % 2;
+		address = get_ppu_addr(temp1, x, y);
+		index = y + (x >> 4);
+		buffer_4_mt(address, index); // ppu_address, index to the data
+		flush_vram_update2();
+		if (y == 0xe0)
+			break;
+	}
 
 	// copy the room to the collision map
 	// the second one should auto-load with the scrolling code

@@ -9,8 +9,6 @@
 /*
 TODO List:
 	[] sign posts / text in game?
-	[] full level
-	[/] game modes
 
 	[] enemy dying animation
 	[] enemy hit animation?
@@ -22,13 +20,21 @@ TODO List:
 
 /*
 BUGS:
-	[] enemy hits you and then scrolling doens't work
-	[] entities are showing way too many / flickering, some bugthere
-	[] entity width is weird
-	[] death trigger isn't set / screen transition
-	[] player falls off ladders on screen transition
+	1. There's a snail in the middle of level 2 now, idk why I probably moved it accidentally (I hope).
+2. Ladder snapping doesn't work if you're not squarely scrolled into the nametable.
+3. Ladder transitions don't always work. (player moves off ladder) Level 0 -> Level 1 doesn't work, and going down doesn't work, and there's weird zipping, but Level 3->Level4 and back Level4->Level3 work really well and I don't know why that one works and the others don't.
+4. you can jump into Level1 from Level0, by jumping up the ladder not climbing it, it'll drop you at the top of level 1.
+5. Spikes don't work.
+6. You can go down ladder at Level6.
+7. Snail get stuck and don't move to the end of a platform.  This does not seem to happen to all of them.  This may change with the updated levels?
+8. If I go down the ladder from level 1 to level 0 - he sure does move fast down the ladder.  When you get back to level 0, you can't climb back up.  Also, you can't scroll backwards once there.
+9. Level 1 - Ladder in the middle of the level (doesn't change stages/just the one that goes between platforms) if standing to the left of it, you end up clipping into the "stone."  THIS APPPLIES TO ALL LADDERS
+10. Level 2 - just after entering, if you jump off the cliff to the left, you loop to the top.  Seems that it could be solved with the wide level down entit
+11. Levle 3 - If you find yourself here after climbinng up and down into level 2...it seems that the alignment of the sprite gets mess up.  As in, the postioning to get on a ladder seems to change
+12. Level 5 - If you transition back to level 4, scrolling breaks
+13. The keyboard space " " is in the wrong space. It should be before the exclamation mark. There's an empty space before the A and that's the ASCII @ sign space. Is it impossible for brian to move the blank space at 64 with the space before the exclaimation at 32?
+14. Player can get hit by enemy and pushed into screen transition without scrolling code called
 
-	[] add spikes/damage
 */
 
 #include "LIB/neslib.h"
@@ -143,18 +149,19 @@ void main(void)
 			// player goes up to previous level
 			if (high_byte(BoxGuy1.y) < 0x08 && level_down && player_on_ladder)
 			{
-				BoxGuy1.y = 0xD000;			 // put the user above the bottom of the screen.
-				pal_fade_to(4, 0);			 // fade to black
-				game_mode = MODE_SWITCH; // this handles loading the level
+				BoxGuy1.y = 0xD000; // put the user above the bottom of the screen.
+				pal_fade_to(4, 0);	// fade to black
+				// game_mode = MODE_SWITCH; // this handles loading the level
 				ppu_off();
-
-				scroll_x = 0;
 				--level;
 				level_down = 0;
 				max_rooms = level_max_rooms[level] - 1;
+				nametable_to_load = max_rooms % 2;
 				max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
+																							// TODO: fix scrolling code here. put player and scroll at the end.
+																							// room =
 				scroll_x = max_scroll;
-				room_to_load = max_rooms;
+				room_to_load = max_rooms - 1;
 				// set max scroll and all that jazz.
 			}
 
@@ -165,14 +172,14 @@ void main(void)
 				pal_fade_to(4, 0);			 // fade to black
 				game_mode = MODE_SWITCH; // this handles loading the level
 				ppu_off();
-				scroll_x = 0;
 				--level;
 				level_down = 0;
 
 				max_rooms = level_max_rooms[level] - 1;
 				max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
 				scroll_x = max_scroll;
-				room_to_load = max_rooms;
+				set_scroll_x(scroll_x);
+				room_to_load = max_rooms - 1;
 				// set max scroll and all that jazz.
 			}
 
@@ -233,8 +240,6 @@ void main(void)
 			{ // now switch rooms
 				ppu_off();
 				oam_clear();
-				scroll_x = 0;
-				set_scroll_x(scroll_x);
 				if (level < 20)
 				{
 					load_room();
@@ -279,7 +284,7 @@ void reset(void)
 	game_mode = MODE_GAME;
 	level = 0;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
-	debug = 0;
+	debug = 1;
 	player_in_hitstun = 0;
 	invul_frames = 0;
 
@@ -402,7 +407,7 @@ void load_room(void)
 	{
 		for (x = 0;; x += 0x20)
 		{
-			address = get_ppu_addr(0, x, y);
+			address = get_ppu_addr(nametable_to_load, x, y);
 			index = (y & 0xf0) + (x >> 4);
 			buffer_4_mt(address, index); // ppu_address, index to the data
 			flush_vram_update2();
@@ -413,17 +418,23 @@ void load_room(void)
 			break;
 	}
 
-	// a little bit in the next room
-	set_data_pointer(stage1_levels_list[offset + 1]);
-	for (y = 0;; y += 0x20)
+	// if room has more than one room, load a little of the second.
+	if (level_max_rooms[level] > 1)
 	{
-		x = 0;
-		address = get_ppu_addr(1, x, y);
-		index = (y & 0xf0);
-		buffer_4_mt(address, index); // ppu_address, index to the data
-		flush_vram_update2();
-		if (y == 0xe0)
-			break;
+		ppu_off();
+		// a little bit in the next room
+		set_data_pointer(stage1_levels_list[offset + 1]);
+		for (y = 0;; y += 0x20)
+		{
+			x = 0;
+			temp1 = (nametable_to_load + 1) % 2;
+			address = get_ppu_addr(temp1, x, y);
+			index = (y & 0xf0);
+			buffer_4_mt(address, index); // ppu_address, index to the data
+			flush_vram_update2();
+			if (y == 0xe0)
+				break;
+		}
 	}
 
 	// copy the room to the collision map

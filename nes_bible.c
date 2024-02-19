@@ -401,6 +401,7 @@ void load_room(void)
 		temp1 = (nametable_to_load + 1) % 2;
 		address = get_ppu_addr(temp1, x, y);
 		index = y + (x >> 4);
+		// index = (y & 0xd8); //ALAN <-- fix
 		buffer_4_mt(address, index); // ppu_address, index to the data
 		flush_vram_update2();
 		if (y == 0xe0)

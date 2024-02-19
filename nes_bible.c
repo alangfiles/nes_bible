@@ -282,7 +282,7 @@ void reset(void)
 	BoxGuy1.health = MAX_PLAYER_HEALTH;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 0;				// debug, change starting level
+	level = 1;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
 	debug = 1;
 	player_in_hitstun = 0;
@@ -725,17 +725,17 @@ void movement(void)
 		direction_y = DOWN;
 		if (bg_coll_ladder_top_under_player())
 		{
-			BoxGuy1.x = (BoxGuy1.x + 0x100) & ~0xF00;
+			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00; // tried to square the player to the ladder
 			player_on_ladder = 1;
 			player_on_ladder_pose = 0;
 			player_in_air = 0;
 			BoxGuy1.vel_y = 0;
 			BoxGuy1.vel_x = 0;
-			BoxGuy1.y += 0x500;
+			BoxGuy1.y += 0x100;
 		}
 	}
 
-	if (player_on_ladder && bg_coll_ladder())
+	if (player_on_ladder && (bg_coll_ladder() || bg_coll_ladder_top_under_player()))
 	{
 		if (pad1 & PAD_DOWN)
 		{

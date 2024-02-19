@@ -141,6 +141,7 @@ char bg_coll_U(void)
 
 char bg_coll_D(void)
 {
+
   // check 2 points on the bottom side
   temp5 = Generic.x + scroll_x;
   temp5 += 2;
@@ -156,7 +157,7 @@ char bg_coll_D(void)
 
   eject_D = (temp_y + 1) & 0x0f;
 
-  if (bg_collision_sub() & COL_ALL || bg_collision_sub() & COL_LADDER_TOP)
+  if (bg_collision_sub() & COL_ALL || ((bg_collision_sub() & COL_LADDER_TOP) && !player_on_ladder))
     return 1;
 
   temp5 = Generic.x + scroll_x + Generic.width;
@@ -164,7 +165,7 @@ char bg_coll_D(void)
   temp_x = (char)temp5;   // low byte
   temp_room = temp5 >> 8; // high byte
 
-  if (bg_collision_sub() & COL_ALL || bg_collision_sub() & COL_LADDER_TOP)
+  if (bg_collision_sub() & COL_ALL || ((bg_collision_sub() & COL_LADDER_TOP) && !player_on_ladder))
     return 1;
 
   return 0;

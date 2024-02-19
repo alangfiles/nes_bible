@@ -564,7 +564,7 @@ void movement(void)
 
 	if (player_in_hitstun > 0)
 	{
-		if (direction == LEFT)
+		if (hit_direction == RIGHT)
 		{
 			BoxGuy1.vel_x += HITSTUN_DECEL;
 			if (BoxGuy1.vel_x >= MAX_SPEED)
@@ -1452,6 +1452,7 @@ void sprite_collisions(void)
 					// check for player collision:
 					if (invul_frames == 0)
 					{
+						hit_direction = enemy_dir[index];
 						// enemy_health[index] -= 1;  // hit the enemy running into it?
 						BoxGuy1.health -= ENEMY_SNAIL_DAMAGE; // check for overflow
 						player_in_hitstun = ENEMY_SNAIL_PLAYER_HITSTUN;

@@ -71,6 +71,7 @@ unsigned char eject_R;				 // remember these from the collision sub routine
 unsigned char eject_D;				 // from below
 unsigned char eject_U;				 // from up
 unsigned char direction = 1;	 // facing left or right?
+unsigned char hit_direction;	 // hit direction
 unsigned char direction_y = 1; // going up or down
 unsigned char sprite_frame_counter;
 unsigned char frame_counter;

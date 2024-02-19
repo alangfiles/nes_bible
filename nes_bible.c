@@ -495,6 +495,7 @@ void draw_sprites(void)
 	offset = get_frame_count() & 3;
 	offset = offset << 4; // * 16, the size of the shuffle array
 
+	// debug, eventually remove this TODO
 	for (index = 0; index < MAX_ENTITY; ++index)
 	{
 		index2 = shuffle_array[offset];
@@ -1380,9 +1381,13 @@ void entity_collisions(void)
 		{
 			switch (entity_type[index])
 			{
-			case ENTITY_PIT:
+			case ENTITY_PIT_WIDE_64:
 				Generic2.width = 64;
-				Generic2.height = 16;
+				Generic2.height = 8;
+				break;
+			case ENTITY_SPIKE_WIDE_64:
+				Generic2.width = 64;
+				Generic2.height = 8;
 				break;
 			default:
 				Generic2.width = 16;
@@ -1392,14 +1397,14 @@ void entity_collisions(void)
 
 			Generic2.x = entity_x[index];
 			Generic2.y = entity_y[index];
-			if (entity_type[index] == ENTITY_PIT_WIDE_64) // for full lenght check?
-			{
-				// don't bother running collision for pits, just check Y
-				if (Generic.y >= Generic2.y)
-				{
-					death_flag = 30; // 30 frames the player can die in
-				}
-			}
+			// if (entity_type[index] == ENTITY_PIT_WIDE_64) // for full lenght check?
+			// {
+			// 	// don't bother running collision for pits, just check Y
+			// 	if (Generic.y >= Generic2.y)
+			// 	{
+			// 		death_flag = 30; // 30 frames the player can die in
+			// 	}
+			// }
 			// else if (entity_type[index] == ENTITY_LEVEL_UP_FULL)
 			// {
 			// 	if (Generic.y >= Generic2.y)
@@ -1415,11 +1420,11 @@ void entity_collisions(void)
 			// 	}
 			// }
 			// TODO: do I even need formal collision checking?
-			else if (check_collision(&Generic, &Generic2))
+			if (check_collision(&Generic, &Generic2))
 			{
 				switch (entity_type[index])
 				{
-				case ENTITY_PIT:
+				case ENTITY_PIT_WIDE_64:
 					death_flag = 30; // 30 frames the player can die in
 					break;
 				case ENTITY_LEVEL_UP:
@@ -1427,6 +1432,9 @@ void entity_collisions(void)
 					break;
 				case ENTITY_LEVEL_DOWN:
 					++level_down;
+					break;
+				case ENTITY_SPIKE_WIDE_64:
+					++death;
 					break;
 				default:
 					break;

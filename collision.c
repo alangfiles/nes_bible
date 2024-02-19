@@ -110,7 +110,7 @@ char bg_coll_ladder_top_under_player(void)
   temp_y = Generic.y + Generic.height;
   temp_y += 4;
   if (bg_collision_sub() & COL_LADDER_TOP)
-    return temp_x;
+    return 1;
 
   return 0;
 }

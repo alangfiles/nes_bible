@@ -110,6 +110,7 @@ void main(void)
 				++level;
 				level_up = 0;
 				room_to_load = 0;
+				nametable_to_load = 0;
 			}
 
 			// player goes down to next level
@@ -123,43 +124,24 @@ void main(void)
 				++level;
 				level_up = 0;
 				room_to_load = 0;
+				nametable_to_load = 0;
 			}
 
 			// player goes up to previous level
 			if (high_byte(BoxGuy1.y) < 0x08 && level_down && player_on_ladder)
 			{
 				BoxGuy1.y = 0xD000; // put the user above the bottom of the screen.
-				pal_fade_to(4, 0);	// fade to black
-				// game_mode = MODE_SWITCH; // this handles loading the level
-				ppu_off();
-				--level;
-				level_down = 0;
-				max_rooms = level_max_rooms[level] - 1;
-				nametable_to_load = max_rooms % 2;
-				max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
-																							// TODO: fix scrolling code here. put player and scroll at the end.
-																							// room =
-				scroll_x = max_scroll;
-				room_to_load = max_rooms - 1;
+				level_down_routine();
+
 				// set max scroll and all that jazz.
 			}
 
 			// player goes down to previous level
 			if (high_byte(BoxGuy1.y) > 0xd0 && level_down)
 			{
-				BoxGuy1.y = 0x1800;			 // put the user near the top of screen
-				pal_fade_to(4, 0);			 // fade to black
-				game_mode = MODE_SWITCH; // this handles loading the level
-				ppu_off();
-				--level;
-				level_down = 0;
+				BoxGuy1.y = 0x1800; // put the user near the top of screen
 
-				max_rooms = level_max_rooms[level] - 1;
-				max_scroll = (max_rooms * 0x100) - 1; // 11 rooms makes 0x0AFF as the max
-				scroll_x = max_scroll;
-				set_scroll_x(scroll_x);
-				room_to_load = max_rooms - 1;
-				// set max scroll and all that jazz.
+				level_down_routine();
 			}
 
 			// player is crossing screen border and set to die.
@@ -261,7 +243,7 @@ void reset(void)
 	BoxGuy1.health = MAX_PLAYER_HEALTH;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 0;				// debug, change starting level
+	level = 1;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
 	debug = 1;
 	player_in_hitstun = 0;
@@ -398,28 +380,63 @@ void load_room(void)
 	}
 
 	// if room has more than one room, load a little of the second.
-	if (level_max_rooms[level] > 1)
+
+	ppu_off();
+	// a little bit in the next room
+	set_data_pointer(stage1_levels_list[offset + 1]);
+	for (y = 0;; y += 0x20)
 	{
-		ppu_off();
-		// a little bit in the next room
-		set_data_pointer(stage1_levels_list[offset + 1]);
-		for (y = 0;; y += 0x20)
-		{
-			x = 0;
-			temp1 = (nametable_to_load + 1) % 2;
-			address = get_ppu_addr(temp1, x, y);
-			index = (y & 0xf0);
-			buffer_4_mt(address, index); // ppu_address, index to the data
-			flush_vram_update2();
-			if (y == 0xe0)
-				break;
-		}
+		x = 0;
+		temp1 = (nametable_to_load + 1) % 2;
+		address = get_ppu_addr(temp1, x, y);
+		index = (y & 0xf0);
+		buffer_4_mt(address, index); // ppu_address, index to the data
+		flush_vram_update2();
+		if (y == 0xe0)
+			break;
 	}
+	ppu_off();
+	// a little bit in the previous room
+	// TODO this doesn't work
+	// set_data_pointer(stage1_levels_list[offset - 1]);
+	// for (y = 0;; y += 0x20)
+	// {
+	// 	x = 240;
+	// 	temp1 = (nametable_to_load + 1) % 2;
+	// 	address = get_ppu_addr(temp1, x, y);
+	// 	index = (y & 0xf0);
+	// 	buffer_4_mt(address, index); // ppu_address, index to the data
+	// 	flush_vram_update2();
+	// 	if (y == 0xe0)
+	// 		break;
+	// }
+	// for (y = 0;; y += 0x20)
+	// {
+	// 	x = 248;
+	// 	temp1 = (nametable_to_load + 1) % 2;
+	// 	address = get_ppu_addr(temp1, x, y);
+	// 	index = (y & 0xf0);
+	// 	buffer_4_mt(address, index); // ppu_address, index to the data
+	// 	flush_vram_update2();
+	// 	if (y == 0xe0)
+	// 		break;
+	// }
 
 	// copy the room to the collision map
 	// the second one should auto-load with the scrolling code
-	memcpy(c_map, stage1_levels_list[offset], 240);
-	temp_cmap1 = 0;
+	// we also copy the previous map into the other collision nametable
+	// so that we can go backwards through the levels.
+	map = room_to_load & 1; // even or odd?
+	if (!map)
+	{
+		memcpy(c_map, stage1_levels_list[offset], 240);
+		memcpy(c_map2, stage1_levels_list[offset - 1], 240);
+	}
+	else
+	{
+		memcpy(c_map2, stage1_levels_list[offset], 240);
+		memcpy(c_map, stage1_levels_list[offset - 1], 240);
+	}
 
 	// init the max_room and max_scroll
 	max_rooms = level_max_rooms[level] - 1;
@@ -534,6 +551,8 @@ void draw_sprites(void)
 		oam_spr(66, 10, temp1 + 0x30, 2);
 		temp1 = (BoxGuy1.x >> 8 & 0x0f);
 		oam_spr(74, 10, temp1 + 0x30, 2);
+
+		oam_spr(120, 10, nametable_to_load + 0x30, 3);
 
 		// // PLAYER Y LOCATION SPRITES
 		// oam_spr(50, 20, 0xff, 2); // 0xff = Y
@@ -1082,12 +1101,10 @@ void new_cmap(void)
 	if (!map)
 	{
 		memcpy(c_map, stage1_levels_list[offset], 240);
-		temp_cmap1 = room_to_load;
 	}
 	else
 	{
 		memcpy(c_map2, stage1_levels_list[offset], 240);
-		temp_cmap2 = room_to_load;
 	}
 }
 
@@ -1496,4 +1513,28 @@ void init_death(void)
 
 	ppu_on_all();
 	pal_fade_to(0, 4); // fade to black
+}
+
+void level_down_routine()
+{
+	pal_fade_to(4, 0); // fade to black
+	ppu_off();
+	game_mode = MODE_SWITCH; // this handles loading the level
+
+	--level;
+	level_down = 0;
+	max_rooms = level_max_rooms[level] - 1;
+	nametable_to_load = max_rooms % 2;
+	if (max_rooms > 1)
+	{
+		max_scroll = (max_rooms * 0x100) - 1;
+		scroll_x = max_scroll;
+		room_to_load = max_rooms;
+	}
+	else
+	{
+		max_scroll = 0;
+		scroll_x = 0;
+		room_to_load = max_rooms;
+	}
 }

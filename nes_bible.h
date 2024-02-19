@@ -60,8 +60,6 @@ unsigned int temp6;
 unsigned int tempint;
 unsigned int tempint2;
 unsigned int temp_playerlocation;
-unsigned char temp_cmap1;
-unsigned char temp_cmap2;
 unsigned char level;
 unsigned char offset;
 unsigned char level_up;
@@ -253,6 +251,7 @@ void reset(void);
 void sprite_obj_init(void);
 void entity_obj_init(void);
 void init_death(void);
+void level_down_routine(void);
 
 char bg_coll_L(void);
 char bg_coll_R(void);

@@ -16412,13 +16412,13 @@ L34C8:	rts
 	lda     #$01
 	sta     _game_mode
 ;
-; level = 1;    // debug, change starting level
+; level = 0;    // debug, change starting level
 ;
+	lda     #$00
 	sta     _level
 ;
 ; room_to_load = 0; // debug, hacky, change starting room
 ;
-	lda     #$00
 	sta     _room_to_load
 ;
 ; debug = 1;

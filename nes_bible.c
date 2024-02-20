@@ -1229,6 +1229,7 @@ void enemy_moves(void)
 		Generic.width = ENEMY_SNAIL_WIDTH;
 		Generic.height = ENEMY_SNAIL_HEIGHT;
 
+		// set animation:
 		if (enemy_frames < 10)
 		{
 			if (enemy_dir[index] == LEFT)
@@ -1275,6 +1276,7 @@ void enemy_moves(void)
 			enemy_frames = 0;
 		}
 
+		// actual movement
 		if (frame_counter % 3 == 0)
 		{
 
@@ -1287,8 +1289,11 @@ void enemy_moves(void)
 					return;
 				if (collision_D) // needs ground under it
 				{
+
 					if (enemy_actual_x[index] == 0)
+					{
 						--enemy_room[index];
+					}
 					--enemy_actual_x[index];
 					enemy_dir[index] = LEFT;
 				}
@@ -1303,12 +1308,13 @@ void enemy_moves(void)
 					return;
 				if (collision_D)
 				{
-					++enemy_actual_x[index];
-					enemy_dir[index] = RIGHT;
+
 					if (enemy_actual_x[index] == 0)
 					{
 						++enemy_room[index];
 					}
+					++enemy_actual_x[index];
+					enemy_dir[index] = RIGHT;
 				}
 			}
 		}

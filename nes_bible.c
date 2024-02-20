@@ -145,7 +145,7 @@ void main(void)
 			}
 
 			// player is crossing screen border and set to die.
-			if (high_byte(BoxGuy1.y) > 0xf0 && death_flag)
+			if (high_byte(BoxGuy1.y) > 0xe8 && death_flag)
 			{
 				++death;
 			}
@@ -248,6 +248,7 @@ void reset(void)
 	debug = 1;
 	player_in_hitstun = 0;
 	invul_frames = 0;
+	nametable_to_load = 0;
 
 	// clear all projectiles
 	for (temp1 = 0; temp1 < MAX_PROJECTILES; ++temp1)
@@ -1412,6 +1413,7 @@ void entity_collisions(void)
 				switch (entity_type[index])
 				{
 				case ENTITY_PIT_WIDE_64:
+					// ppu_off();
 					death_flag = 30; // 30 frames the player can die in
 					break;
 				case ENTITY_LEVEL_UP:

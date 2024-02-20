@@ -247,7 +247,7 @@ void reset(void)
 	game_mode = MODE_GAME;
 	level = 0;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
-	debug = 1;
+	debug = 0;
 	player_in_hitstun = 0;
 	invul_frames = 0;
 	nametable_to_load = 0;

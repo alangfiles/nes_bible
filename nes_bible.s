@@ -16421,14 +16421,12 @@ L34C8:	rts
 ;
 	sta     _room_to_load
 ;
-; debug = 1;
+; debug = 0;
 ;
-	lda     #$01
 	sta     _debug
 ;
 ; player_in_hitstun = 0;
 ;
-	lda     #$00
 	sta     _player_in_hitstun
 ;
 ; invul_frames = 0;

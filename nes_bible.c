@@ -14,6 +14,8 @@ TODO List:
 	[] enemy hit animation?
 	[] level transition doesn't work?
 	[] fix enemy collision (down)
+	[] cleanup reset code
+	[] add lives / deaths / game over
 */
 
 #include "LIB/neslib.h"
@@ -750,7 +752,11 @@ void movement(void)
 	}
 	else
 	{
-		player_on_ladder = 0;
+		// if (player_on_ladder && bg_coll_ladder_top_at_player())
+		// {
+		// 	// how does a player get off ladders. before they just moved fast enough
+		// 	player_on_ladder = 0;
+		// }
 		if (BoxGuy1.vel_y < 0x300)
 		{
 			BoxGuy1.vel_y += GRAVITY;
@@ -777,6 +783,7 @@ void movement(void)
 			player_in_air = 0;
 			multi_jump = 0;
 			player_on_ladder = 0;
+
 			high_byte(BoxGuy1.y) = high_byte(BoxGuy1.y) - eject_D;
 			BoxGuy1.y &= 0xff00;
 			if (BoxGuy1.vel_y > 0)

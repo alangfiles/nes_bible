@@ -103,17 +103,18 @@ char bg_coll_ladder(void)
   return 0;
 }
 
-// char bg_coll_ladder_top_at_player(void)
-// {
-//   temp5 = Generic.x + scroll_x + 7;
-//   temp_x = (char)temp5; // low byte
-//   temp_y = Generic.y + Generic.height;
-//   temp_y -= 16;
-//   if (bg_collision_sub() & COL_LADDER_TOP)
-//     return 1;
+char bg_coll_ladder_top_at_player(void)
+{
+  temp5 = Generic.x + scroll_x + 7;
+  temp_x = (char)temp5; // low byte
+  temp_y = Generic.y + Generic.height;
+  temp_y -= 2;
 
-//   return 0;
-// }
+  if (bg_collision_sub() & COL_LADDER)
+    return 1;
+
+  return 0;
+}
 
 char bg_coll_ladder_top_under_player(void)
 {

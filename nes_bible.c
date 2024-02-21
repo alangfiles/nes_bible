@@ -245,7 +245,7 @@ void reset(void)
 	BoxGuy1.health = MAX_PLAYER_HEALTH;
 	invul_frames = 0;
 	game_mode = MODE_GAME;
-	level = 0;				// debug, change starting level
+	level = 1;				// debug, change starting level
 	room_to_load = 0; // debug, hacky, change starting room
 	debug = 0;
 	player_in_hitstun = 0;
@@ -707,22 +707,6 @@ void movement(void)
 
 	// BoxGuy1.vel_y is signed
 
-	if (pad1 & PAD_DOWN)
-	{
-		direction_y = DOWN;
-		// TODO: not hardcode the last level here
-		if (bg_coll_ladder_top_under_player() && level != 6)
-		{
-			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00; // tried to square the player to the ladder
-			player_on_ladder = 1;
-			player_on_ladder_pose = 0;
-			player_in_air = 0;
-			BoxGuy1.vel_y = 0;
-			BoxGuy1.vel_x = 0;
-			BoxGuy1.y += 0x100;
-		}
-	}
-
 	if (player_on_ladder && (bg_coll_ladder() || bg_coll_ladder_top_under_player()))
 	{
 		if (pad1 & PAD_DOWN)
@@ -752,11 +736,11 @@ void movement(void)
 	}
 	else
 	{
-		// if (player_on_ladder && bg_coll_ladder_top_at_player())
-		// {
-		// 	// how does a player get off ladders. before they just moved fast enough
-		// 	player_on_ladder = 0;
-		// }
+		if (player_on_ladder && bg_coll_ladder_top_under_player())
+		{
+			// how does a player get off ladders. before they just moved fast enough
+			player_on_ladder = 0;
+		}
 		if (BoxGuy1.vel_y < 0x300)
 		{
 			BoxGuy1.vel_y += GRAVITY;
@@ -766,6 +750,23 @@ void movement(void)
 			BoxGuy1.vel_y = 0x300; // consistent
 		}
 	}
+
+	if (pad1 & PAD_DOWN)
+	{
+		direction_y = DOWN;
+		// TODO: not hardcode the last level here
+		if (bg_coll_ladder_top_under_player() && level != 6)
+		{
+			BoxGuy1.x = (BoxGuy1.x + 0x700) & ~0xF00; // tried to square the player to the ladder
+			player_on_ladder = 1;
+			player_on_ladder_pose = 0;
+			player_in_air = 0;
+			BoxGuy1.vel_y = 0;
+			BoxGuy1.vel_x = 0;
+			BoxGuy1.y += 0x100;
+		}
+	}
+
 	BoxGuy1.y += BoxGuy1.vel_y; // add gravity to y; (make him go up or down)
 	if (BoxGuy1.y > 0xf000)			// limit how high he can go
 	{

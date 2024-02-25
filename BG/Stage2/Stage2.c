@@ -26,23 +26,23 @@ const unsigned char level_max_rooms[] = {
     2, 1, 1, 3, 1, 4, 1, 1, 5, 1};
 
 const unsigned char level_offsets[] = {
-    0, 3, 4, 5, 8, 9, 13, 14, 15, 20};
+    0, 2, 3, 4, 7, 8, 12, 13, 14, 19, 20};
 
-// enum
-// {
-//     ENEMY_SNAIL,
-//     ENEMY_OWL,
-//     ENEMY_SNAKE,
-// };
+enum
+{
+    ENEMY_SNAIL,
+    ENEMY_OWL,
+    ENEMY_SNAKE,
+};
 
-// enum
-// {
-//     ENTITY_LEVEL_UP,
-//     ENTITY_PIT,
-//     ENTITY_PIT_WIDE_64,
-//     ENTITY_LEVEL_DOWN,
-//     ENTITY_SPIKE_WIDE_64
-// };
+enum
+{
+    ENTITY_LEVEL_UP,
+    ENTITY_PIT,
+    ENTITY_PIT_WIDE_64,
+    ENTITY_LEVEL_DOWN,
+    ENTITY_SPIKE_WIDE_64
+};
 
 // NOTE MAX_ENEMY = 10
 

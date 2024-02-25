@@ -289,4 +289,4 @@ sounds_data:
 
 .segment "CHARS"
 
-	.incbin "nes_bible.chr"
+	.incbin "biblemanstage2.chr"

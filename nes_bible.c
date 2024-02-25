@@ -107,6 +107,7 @@ void main(void)
 				BoxGuy1.y = 0xD000;			 // put the user above the bottom of the screen.
 				pal_fade_to(4, 0);			 // fade to black
 				game_mode = MODE_SWITCH; // this handles loading the level
+				init_mode_switch();
 				scroll_x = 0;
 				ppu_off();
 				++level;
@@ -1539,4 +1540,11 @@ void level_down_routine()
 		scroll_x = 0;
 		room_to_load = max_rooms;
 	}
+}
+
+void init_mode_switch()
+{
+	// switch to vertical scroll,
+	// load both name tables
+	// the mode moves scrollY up
 }

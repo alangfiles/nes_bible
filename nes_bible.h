@@ -251,6 +251,7 @@ void reset(void);
 void sprite_obj_init(void);
 void entity_obj_init(void);
 void init_death(void);
+void init_mode_switch(void);
 void level_down_routine(void);
 
 char bg_coll_L(void);

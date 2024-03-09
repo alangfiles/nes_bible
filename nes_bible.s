@@ -13484,8 +13484,8 @@ L3573:	inc     _multi_jump
 ;
 ; BoxGuy1.vel_y = JUMP_VEL; // JUMP
 ;
-	ldx     #$FB
-	lda     #$80
+	ldx     #$FA
+	lda     #$F0
 	sta     _BoxGuy1+6
 	stx     _BoxGuy1+6+1
 ;

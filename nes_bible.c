@@ -192,7 +192,7 @@ void main(void)
 			ppu_wait_nmi();
 			++bright_count;
 			if (bright_count >= 0x10)
-			{ // fade out
+			{ // fade out  
 				bright_count = 0;
 				--bright;
 				if (bright != 0xff)

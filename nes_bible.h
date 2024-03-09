@@ -5,7 +5,7 @@
 #define HITSTUN_DECEL 65
 #define MAX_SPEED 0x160
 #define MAX_LADDER_SPEED 0x100
-#define JUMP_VEL -0x480
+#define JUMP_VEL -0x510
 #define MAX_PLAYER_HEALTH 28
 #define GRAVITY 0x3c
 #define MAX_PROJECTILES 3
